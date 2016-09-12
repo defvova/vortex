@@ -4,12 +4,12 @@ import { VK_BASE_URL } from '../config'
 const vk = new UniversalApi({
   baseUrl: VK_BASE_URL,
   jsonp: true,
-  query: function() {
+  query: function() { // eslint-disable-line babel/object-shorthand
     return {
       access_token: this.token
     }
   },
-  transformResponse: res => {
+  transformResponse: (res) => {
     const body = res.body
 
     if (body.response) {
