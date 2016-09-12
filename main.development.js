@@ -6,66 +6,68 @@ import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './app/api/config'
 let mainWindow = null
 
 if (process.env.NODE_ENV === 'development') {
-  require('electron-debug')(); // eslint-disable-line global-require
+  require('electron-debug')() // eslint-disable-line global-require
 }
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
-    const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+    const installer = require('electron-devtools-installer'), // eslint-disable-line global-require
+          extensions = [
+            'REACT_DEVELOPER_TOOLS',
+            'REDUX_DEVTOOLS'
+          ],
+          forceDownload = !!process.env.UPGRADE_EXTENSIONS
 
-    const extensions = [
-      'REACT_DEVELOPER_TOOLS',
-      'REDUX_DEVTOOLS'
-    ];
-    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
     for (const name of extensions) {
       try {
-        await installer.default(installer[name], forceDownload);
+        await installer.default(installer[name], forceDownload)
       } catch (e) {} // eslint-disable-line
     }
   }
-};
+}
 
 app.on('ready', async () => {
-  await installExtensions();
+  await installExtensions()
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728
-  });
+  })
 
-  mainWindow.loadURL(`file://${__dirname}/app/app.html`);
+  mainWindow.loadURL(`file://${__dirname}/app/app.html`)
 
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.show();
-    mainWindow.focus();
-  });
+    mainWindow.show()
+    mainWindow.focus()
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null
     // configStore.clear()
-  });
+  })
 
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools();
+    mainWindow.openDevTools()
     mainWindow.webContents.on('context-menu', (e, props) => {
-      const { x, y } = props;
+      const { x, y } = props
 
       Menu.buildFromTemplate([{
         label: 'Inspect element',
         click() {
-          mainWindow.inspectElement(x, y);
+          mainWindow.inspectElement(x, y)
         }
-      }]).popup(mainWindow);
-    });
+      }]).popup(mainWindow)
+    })
   }
 
-  ipcMain.on('get-vk-permission', (event) => {
+  ipcMain.on('get-vk-permission', () => {
     auth({
       appId: VK_APP_ID,
       scope: VK_SCOPE,
@@ -75,7 +77,7 @@ app.on('ready', async () => {
     }).then((res) => {
       configStore.set('vk', res)
     }).catch((err) => {
-      console.error(err)
+      console.error(err) // eslint-disable-line no-console
     })
   })
 })

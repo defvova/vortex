@@ -1,9 +1,9 @@
 /* eslint max-len: 0 */
-import webpack from 'webpack';
-import merge from 'webpack-merge';
-import baseConfig from './webpack.config.base';
+import webpack from 'webpack'
+import merge from 'webpack-merge'
+import baseConfig from './webpack.config.base'
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 
 export default merge(baseConfig, {
   debug: true,
@@ -49,4 +49,4 @@ export default merge(baseConfig, {
   ],
 
   target: 'electron-renderer'
-});
+})

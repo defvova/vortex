@@ -9,6 +9,7 @@ import { fetchAudios } from '../actions/audio'
 class Home extends Component {
   componentWillMount() {
     const { dispatch } = this.props
+
     dispatch(fetchAudios())
   }
 
@@ -23,7 +24,7 @@ class Home extends Component {
       <div>
         <div className={styles.container}>
           <h2>Home</h2>
-          <Link to="/counter">to Counter</Link>
+          <Link to='/counter'>to Counter</Link>
           <br />
           <a onClick={this.handle}>Login via Vk</a>
           <br />
@@ -55,7 +56,7 @@ class Home extends Component {
           </table>
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -70,6 +71,7 @@ Home.propTypes = {
 
 function mapStateToProps(state) {
   const { audio } = state
+
   return { audio }
 }
 

@@ -1,0 +1,68 @@
+image: node:latest
+
+stages:
+  - setup
+  - build
+  - test
+  - eslint
+  # - test-e2e
+
+cache:
+  paths:
+    - node_modules/
+
+setup:
+  stage: setup
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1d
+  script:
+    - npm install && npm install -g mocha
+
+build:
+  stage: build
+  artifacts:
+    paths:
+      - main.js
+      - main.js.map
+      - bundle.js
+      - style.css
+      - bundle.js.map
+      - style.css.map
+    expire_in: 1d
+  script:
+    - npm run build
+
+test:
+  stage: test
+  script:
+    - npm run test
+
+eslint:
+  stage: eslint
+  script:
+    - npm run lint
+
+# test-e2e:
+#   stage: test-e2e
+#   script:
+#     - set -xe
+#     - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+#     - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+#
+#     # Update packages
+#     - apt-get update -yqqq
+#     # Install Chrome browser
+#     - apt-get install -y google-chrome-stable
+#     # Install Virtual Display emulator
+#     - apt-get install -y xvfb
+#
+#     - export CXX="g++-4.8"
+#     - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+#     - export DISPLAY=:99.0
+#     - sh -e /etc/init.d/xvfb start &
+#     - sleep 3
+#
+#     - npm run build
+#     - xvfb-run -a npm run test-e2e
