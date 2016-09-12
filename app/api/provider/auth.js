@@ -1,15 +1,4 @@
-import url from 'url'
-import qs from 'querystring'
-import { BrowserWindow } from 'electron'
-import { VK_AUTHORIZE_URL, VK_REDIRECT_URL } from '../config'
-
 /**
- * A module which helps to complete vk.com OAuth2 process for standalone apps.
- *
- * Opens a new window to perform VK authentication.
- * @returns {Promise} A promise fillfilled with accessToken, userId and expiresIn values,
- * or rejected promise if login request was cancelled.
- *
  * Options
  *
  * appId: your app id
@@ -27,7 +16,12 @@ import { VK_AUTHORIZE_URL, VK_REDIRECT_URL } from '../config'
  * resizable: false
  */
 
-function vk(options, windowOptions) {
+import url from 'url'
+import qs from 'querystring'
+import { BrowserWindow } from 'electron'
+import { VK_AUTHORIZE_URL, VK_REDIRECT_URL } from '../config'
+
+function auth(options, windowOptions) {
   const opts = {
     authorizeUrl: VK_AUTHORIZE_URL,
     redirectUri: VK_REDIRECT_URL,
@@ -76,11 +70,7 @@ function vk(options, windowOptions) {
         } else if ('error' in query) {
           reject(new Error(query.error_description));
         } else if ('access_token' in query && 'user_id' in query && 'expires_in' in query) {
-          resolve({
-            accessToken: query.access_token,
-            userId: query.user_id,
-            expiresIn: query.expires_in,
-          })
+          resolve(query)
         } else {
           reject(new Error('No access token or error is available'));
         }
@@ -94,4 +84,4 @@ function vk(options, windowOptions) {
   })
 }
 
-export default vk
+export default auth

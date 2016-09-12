@@ -1,4 +1,5 @@
-import path from 'path';
+import path from 'path'
+import webpack from 'webpack'
 
 export default {
   module: {
@@ -21,8 +22,11 @@ export default {
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
   },
   plugins: [
-
+    new webpack.DefinePlugin({ "global.GENTLY": false })
   ],
+  node: {
+    __dirname: true
+  },
   externals: [
     // put your node 3rd party libraries which can't be built with webpack here
     // (mysql, mongodb, and so on..)

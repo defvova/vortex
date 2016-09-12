@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
-import authVK from './app/api/auth/vk'
+import auth from './app/api/provider/auth'
 import configStore from './app/utils/configstore'
 import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './app/api/config'
 
@@ -48,7 +48,7 @@ app.on('ready', async () => {
 
   mainWindow.on('closed', () => {
     mainWindow = null
-    configStore.clear()
+    // configStore.clear()
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -66,7 +66,7 @@ app.on('ready', async () => {
   }
 
   ipcMain.on('get-vk-permission', (event) => {
-    authVK({
+    auth({
       appId: VK_APP_ID,
       scope: VK_SCOPE,
       revoke: VK_REVOKE
@@ -78,4 +78,4 @@ app.on('ready', async () => {
       console.error(err)
     })
   })
-});
+})
