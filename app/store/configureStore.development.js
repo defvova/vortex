@@ -5,10 +5,12 @@ import { hashHistory } from 'react-router'
 import { routerMiddleware, push } from 'react-router-redux'
 import rootReducer from '../reducers'
 
-import * as counterActions from '../actions/counter'
+import * as audio from '../actions/audio'
+import * as song from '../actions/song'
 
 const actionCreators = {
-        ...counterActions,
+        ...audio,
+        ...song,
         push
       },
       logger = createLogger({

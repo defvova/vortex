@@ -40,10 +40,10 @@ function auth(options, windowOptions) {
           ...windowOptions
         },
         state = (Date.now().toString(36) + (Math.random() * 0x10000).toString(36).substr(2, 5)).toUpperCase(),
-        responseType = 'token',
+        response_type = 'token', // eslint-disable-line camelcase
         query = qs.stringify({
           state,
-          responseType,
+          response_type,
           client_id: opts.appId,
           scope: opts.scope,
           display: opts.display,
