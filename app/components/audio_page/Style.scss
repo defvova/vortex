@@ -1,0 +1,14 @@
+.container {
+  position: absolute;
+  left: 10px;
+  text-align: center;
+
+
+  a {
+    font-size: 1.4rem;
+  }
+
+  :fullscreen a {
+    display: flex
+  }
+}

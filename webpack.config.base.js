@@ -1,5 +1,7 @@
 import path from 'path'
 import webpack from 'webpack'
+import autoprefixer from 'autoprefixer'
+import precss from 'precss'
 
 export default {
   module: {
@@ -26,6 +28,9 @@ export default {
   ],
   node: {
     __dirname: true
+  },
+  postcss: () => {
+    return [autoprefixer({ browsers: ['last 2 versions'] }), precss]
   },
   externals: [
     // put your node 3rd party libraries which can't be built with webpack here

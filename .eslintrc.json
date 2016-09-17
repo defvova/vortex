@@ -6,8 +6,8 @@
   "parser": "babel-eslint",
   "globals": { "Promise": true },
   "rules": {
-    "flow-vars/define-flow-type": 1,
-    "flow-vars/use-flow-type": 1,
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
     "import/no-duplicates": 2,
     "import/named": 2,
     "comma-dangle": [2, "never"],
@@ -95,7 +95,7 @@
     "prefer-rest-params": 2,
     "prefer-template": 2
   },
-  "plugins": ["react", "import", "flow-vars", "babel"],
+  "plugins": ["react", "import", "flowtype", "babel"],
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "ecmaFeatures": {
     "ecmaVersion": 6,
