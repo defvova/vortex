@@ -19,8 +19,10 @@
       {
         const script = document.createElement('script');
         const port = process.env.PORT || 3000;
+
         script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
-        document.write(script.outerHTML);
+        script.defer = true; // parser-inserted true defer take precedence over async behavior
+        document.head.appendChild(script);
       }
     </script>
   </body>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import I from 'react-immutable-proptypes'
 import { ipcRenderer } from 'electron'
 
-import styles from '../components/audio_page/Style.css'
+import styles from '../components/audio_page/Style.scss'
 import SongSelector from '../components/audio_page/SongSelector'
 import PlayerControl from '../components/audio_page/PlayerControl'
 import Sound from '../utils/reactSound'
