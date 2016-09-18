@@ -1,0 +1,26 @@
+@import '../../app.config.scss';
+
+.panel {
+  background: $sectionBackground;
+  border-right: 1px solid $separatorDarkColor;
+  position: fixed;
+  left: 0;
+  height: 100%;
+  width: 50px;
+
+  ul {
+    padding-top: 25px;
+
+    .active {
+      background: $bodyBackground;
+    }
+
+    li {
+      display: flex;
+
+      span {
+        padding: 17px;
+      }
+    }
+  }
+}

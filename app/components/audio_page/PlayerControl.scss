@@ -1,0 +1,101 @@
+@import '../../app.config.scss';
+
+.player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: $sectionBackground;
+  border-top: 1px solid $separatorDarkColor;
+  padding-top: 5px;
+  text-align: center;
+  z-index: 100;
+
+  .details {
+    width: 300px;
+    padding: 5px;
+    text-align: left;
+    float: left;
+
+    img {
+      height: 50px;
+      width: 50px;
+      float: left;
+      cursor: pointer;
+      padding-right: 10px;
+    }
+
+    .title {
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .inner {
+      display: flex;
+    }
+
+    .artist {
+      display: inline-block;
+      color: #ccc;
+      font-size: 14px;
+      padding: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 300;
+      cursor: pointer;
+    }
+
+    .quality {
+      display: flex;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .time {
+      display: inline-block;
+      font-size: 14px;
+      padding: 3px 10px;
+      vertical-align: top;
+      color: #ccc;
+
+      .current:not(:empty) {
+        &::after {
+          content: '/';
+          margin: 0 3px;
+        }
+      }
+    }
+  }
+
+  .controls {
+    margin: 18px 30px;
+    float: right;
+
+    a {
+      font-size: 20px;
+      margin-left: 20px;
+
+    }
+
+    .lock, .repeat, .random {
+      font-size: 14px !important;
+    }
+
+    .volume-up {
+      margin-left: 50px;
+    }
+
+    .fa {
+      font-size: 20px;
+      color: $linkColor;
+
+      &.thin::before {
+        -webkit-text-stroke: 1px #000;
+      }
+    }
+  }
+}

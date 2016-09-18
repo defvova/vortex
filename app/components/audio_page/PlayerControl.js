@@ -1,5 +1,6 @@
 import React, { Component, PropTypes as T } from 'react'
 import I from 'react-immutable-proptypes'
+import styles from './PlayerControl.scss'
 
 class PlayerControl extends Component {
   handleSongChange = () => {
@@ -29,8 +30,10 @@ class PlayerControl extends Component {
     onPrev(list.get(index), index)
   }
 
-  control = (text, clickHandler) => {
-    return <a onClick={clickHandler}>{text} </a>
+  control = (nameClass, clickHandler) => {
+    const cl = `fa fa-${nameClass}`
+
+    return <a className={styles[nameClass]}><i className={cl} onClick={clickHandler}></i></a>
   }
 
   render() {
@@ -39,7 +42,9 @@ class PlayerControl extends Component {
       onResume,
       onStopped,
       playStatus,
-      soundStatuses
+      soundStatuses,
+      artist,
+      title
     } = this.props,
           controls = {
             play: playStatus === soundStatuses.STOPPED,
@@ -49,16 +54,33 @@ class PlayerControl extends Component {
           }
 
     return (
-      <div>
-        <br />
-        <div>==============================</div>
-        { this.control('Prev', this.handleSongPrev.bind()) }
-        { controls.play && this.control('Play', this.handleSongChange.bind()) }
-        { controls.stop && this.control('Stop', onStopped.bind()) }
-        { controls.pause && this.control('Pause', onPause.bind()) }
-        { controls.resume && this.control('Resume', onResume.bind()) }
-        { this.control('Next', this.handleSongNext.bind()) }
-        <div>==============================</div>
+      <div className={styles.player}>
+        <div className={styles.details}>
+          <img className={styles.thumb} src='https://i.scdn.co/image/9932849b7e42a167b0e2992435ba3c276d59b37c' />
+          <h2 className={styles.title}>{title}</h2>
+          <div className={styles.inner}>
+            <h4 className={styles.artist}>{artist}</h4>
+            <div className={styles.time}>
+              <span className={styles.current}>0:00</span>
+              <span>3:20</span>
+            </div>
+          </div>
+          <div className={styles.quality}>
+            <span>320 кб/с</span>
+          </div>
+        </div>
+        <div className={styles.controls}>
+          { this.control('step-backward', this.handleSongPrev.bind()) }
+          { controls.play && this.control('play', this.handleSongChange.bind()) }
+          { controls.stop && this.control('stop', onStopped.bind()) }
+          { controls.pause && this.control('pause', onPause.bind()) }
+          { controls.resume && this.control('play', onResume.bind()) }
+          { this.control('step-forward', this.handleSongNext.bind()) }
+          { this.control('lock', this.handleSongNext.bind())}
+          { this.control('repeat', this.handleSongNext.bind())}
+          { this.control('random', this.handleSongNext.bind())}
+          { this.control('volume-up', this.handleSongNext.bind())}
+        </div>
       </div>
     )
   }
@@ -84,7 +106,9 @@ PlayerControl.propTypes = {
     STOPPED: T.string.isRequired
   }).isRequired,
   songIndex: T.number.isRequired,
-  count: T.number.isRequired
+  count: T.number.isRequired,
+  artist: T.string,
+  title: T.string
 }
 
 export default PlayerControl

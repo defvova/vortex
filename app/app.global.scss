@@ -1,36 +1,27 @@
+@import 'app.config.scss';
+@import 'app.reset.scss';
+
 body {
-  position: relative;
-  color: white;
-  height: 100vh;
-  background-color: #232C39;
-  background-image: linear-gradient(45deg, rgba(0, 216, 255, .5) 10%, rgba(0, 1, 127, .7));
-  font-family: Arial, Helvetica, Helvetica Neue;
-  overflow-y: hidden;
+  background-color: $bodyBackground;
+  color: $defaultColor;
 
   a {
-    color: white;
-    opacity: .75;
+    color: $linkColor;
     text-decoration: none;
+
     &:hover {
-      opacity: 1;
-      text-decoration: none;
+      color: $linkColor;
       cursor: pointer;
+      text-decoration: none;
     }
   }
-}
 
-h2 {
-  margin: 0;
-  font-size: 2.25rem;
-  font-weight: bold;
-  letter-spacing: -.025em;
-  color: #fff;
-}
+  ul {
+    margin: 0;
+    padding: 0;
 
-p {
-  font-size: 24px;
-}
-
-li {
-  list-style: none;
+    li {
+      list-style: none;
+    }
+  }
 }

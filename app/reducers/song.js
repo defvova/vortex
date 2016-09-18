@@ -13,7 +13,9 @@ import {
 const initState = Map({
   currentSong: Map({
     url: '',
-    aid: null
+    aid: null,
+    title: null,
+    artist: null
   }),
   position: 0,
   volume: 100,
@@ -29,7 +31,9 @@ function song(state = initState, action) {
       return state.merge({
         currentSong: Map({
           url: '',
-          aid: null
+          aid: null,
+          title: null,
+          artist: null
         }),
         position: 0,
         playStatus: Sound.status.STOPPED
@@ -53,7 +57,9 @@ function updateState(state, action) {
   return state.merge({
     currentSong: Map({
       url: action.currentSong.get('url'),
-      aid: action.currentSong.get('aid')
+      aid: action.currentSong.get('aid'),
+      title: action.currentSong.get('title'),
+      artist: action.currentSong.get('artist')
     }),
     position: 0,
     playStatus: Sound.status.PLAYING,

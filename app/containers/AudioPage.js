@@ -1,9 +1,7 @@
 import React, { Component, PropTypes as T } from 'react'
 import { connect } from 'react-redux'
 import I from 'react-immutable-proptypes'
-import { ipcRenderer } from 'electron'
 
-import styles from '../components/audio_page/Style.scss'
 import SongSelector from '../components/audio_page/SongSelector'
 import PlayerControl from '../components/audio_page/PlayerControl'
 import Sound from '../utils/reactSound'
@@ -23,10 +21,6 @@ class HomePage extends Component {
     const { dispatch } = this.props
 
     dispatch(fetchAudios())
-  }
-
-  handleVkLogin = () => {
-    ipcRenderer.send('get-vk-permission')
   }
 
   handleSongSelected = (currentSong, index) => {
@@ -81,11 +75,12 @@ class HomePage extends Component {
           currentAid = currentSong.get('aid'),
           count = audio.get('count'),
           list = audio.get('list'),
-          songIndex = song.get('songIndex')
+          songIndex = song.get('songIndex'),
+          artist = currentSong.get('artist'),
+          title = currentSong.get('title')
 
     return (
-      <div className={styles.container}>
-        <div><a onClick={this.handleVkLogin.bind()}>Login via Vk</a></div>
+      <div>
         <PlayerControl
           soundStatuses={Sound.status}
           count={count}
@@ -96,6 +91,8 @@ class HomePage extends Component {
           onStopped={this.handleSongStopped.bind()}
           onNext={this.handleSongNext.bind(this)}
           onPrev={this.handleSongPrev.bind(this)}
+          title={title}
+          artist={artist}
           list={list}
           playStatus={playStatus} />
         <SongSelector
