@@ -1,0 +1,27 @@
+@import '../../app.config.scss';
+
+.header {
+  background: $bodyBackground;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  border-bottom: 1px solid $separatorDarkColor;
+  box-shadow: 0 0 7px 0px #000;
+  z-index: 100;
+
+  .nav {
+    margin: 13px;
+
+    a {
+      font-size: 1.4rem;
+      color: $linkColor;
+      cursor: pointer;
+
+      &:hover {
+        color: $scColor;
+      }
+    }
+  }
+}
