@@ -1,6 +1,6 @@
 import React, { PropTypes as T } from 'react'
 import { soundManager } from 'soundmanager2/script/soundmanager2-nodebug-jsmin'
-// const soundManager = require('soundmanager2')
+// import { soundManager } from 'soundmanager2'
 
 const pendingCalls = [],
       playStatuses = {
@@ -103,11 +103,11 @@ class Sound extends React.Component {
         sound.setPosition(this.props.playFromPosition)
       }
 
-      if (this.props.playFromPosition !== null) {
-        if (sound.position !== this.props.playFromPosition &&
-          Math.round(sound.position) !== Math.round(this.props.playFromPosition)) {
+      if (this.props.position != null) { // eslint-disable-line no-eq-null
+        if (sound.position !== this.props.position &&
+          Math.round(sound.position) !== Math.round(this.props.position)) {
 
-          sound.setPosition(this.props.playFromPosition)
+          sound.setPosition(this.props.position)
         }
       }
 

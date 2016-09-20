@@ -1,6 +1,8 @@
 import React, { Component, PropTypes as T } from 'react'
 import I from 'react-immutable-proptypes'
+import { remote } from 'electron'
 import styles from './PlayerControl.scss'
+import { formatMilliseconds } from '../../utils/formatMilliseconds'
 
 class PlayerControl extends Component {
   handleSongChange = () => {
@@ -36,6 +38,18 @@ class PlayerControl extends Component {
     return <a className={styles[nameClass]}><i className={cl} onClick={clickHandler}></i></a>
   }
 
+  handleSongPosition = (e) => {
+    const { duration, onSongPosition } = this.props,
+          width = remote.getCurrentWindow().getSize()[0],
+          position = duration * (e.pageX / width)
+
+    onSongPosition(position)
+  }
+
+  progressBar = (position) => {
+    return { width: `${(position / 1) * 100}%` }
+  }
+
   render() {
     const {
       onPause,
@@ -44,7 +58,11 @@ class PlayerControl extends Component {
       playStatus,
       soundStatuses,
       artist,
-      title
+      title,
+      duration,
+      elapsed,
+      position,
+      bytesLoaded
     } = this.props,
           controls = {
             play: playStatus === soundStatuses.STOPPED,
@@ -55,14 +73,18 @@ class PlayerControl extends Component {
 
     return (
       <div className={styles.player}>
+        <div className={styles.progress} onClick={this.handleSongPosition.bind(this)}>
+          <div className={styles.bar} style={this.progressBar(position)} />
+          <div className={styles.loaded} style={this.progressBar(bytesLoaded)} />
+        </div>
         <div className={styles.details}>
           <img className={styles.thumb} src='https://i.scdn.co/image/9932849b7e42a167b0e2992435ba3c276d59b37c' />
           <h2 className={styles.title}>{title}</h2>
           <div className={styles.inner}>
             <h4 className={styles.artist}>{artist}</h4>
             <div className={styles.time}>
-              <span className={styles.current}>0:00</span>
-              <span>3:20</span>
+              <span className={styles.current}>{formatMilliseconds(elapsed)}</span>
+              <span>{formatMilliseconds(duration)}</span>
             </div>
           </div>
           <div className={styles.quality}>
@@ -93,6 +115,7 @@ PlayerControl.propTypes = {
   onNext: T.func.isRequired,
   onPrev: T.func.isRequired,
   onSongSelected: T.func.isRequired,
+  onSongPosition: T.func.isRequired,
   list: I.listOf(
     I.mapContains({
       aid: T.number.isRequired,
@@ -107,8 +130,12 @@ PlayerControl.propTypes = {
   }).isRequired,
   songIndex: T.number.isRequired,
   count: T.number.isRequired,
-  artist: T.string,
-  title: T.string
+  duration: T.number.isRequired,
+  elapsed: T.number.isRequired,
+  position: T.number.isRequired,
+  bytesLoaded: T.number,
+  artist: T.string.isRequired,
+  title: T.string.isRequired
 }
 
 export default PlayerControl
