@@ -7,7 +7,6 @@
   width: 100%;
   background: $sectionBackground;
   border-top: 1px solid $separatorDarkColor;
-  padding-top: 5px;
   text-align: center;
   z-index: 100;
 
@@ -95,6 +94,54 @@
 
       &.thin::before {
         -webkit-text-stroke: 1px #000;
+      }
+    }
+  }
+
+  .progress {
+    cursor: pointer;
+    display: flex;
+    height: 4px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);;
+
+      .loaded {
+        display: none;
+      }
+
+      .bar::after {
+        transform: scale(1);
+      }
+    }
+
+    .loaded {
+      position: absolute;
+      height: 4px;
+      background-color: #353535;
+    }
+
+    .bar {
+      height: 100%;
+      background-color: $scColor;
+      z-index: 10;
+
+      &::after {
+        content: '';
+        position: relative;
+        top: -4px;
+        left: 6px;
+        display: block;
+        float: right;
+        height: 12px;
+        width: 12px;
+        background: rgb(255, 122, 0);
+        border-radius: 50%;
+        box-shadow: 0 0 2px 0 #000;
+        transform: scale(0);
+        transition: $transitionInstantValue;
       }
     }
   }

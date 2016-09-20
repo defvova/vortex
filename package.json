@@ -91,6 +91,7 @@
     "redux-logger": "^2.6.1",
     "redux-thunk": "^2.1.0",
     "sass-loader": "^4.0.2",
+    "sinon": "^1.17.6",
     "soundmanager2": "^2.97.20150601-a",
     "spectron": "^3.3.0",
     "style-loader": "^0.13.1",
