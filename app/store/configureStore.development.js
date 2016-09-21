@@ -19,7 +19,7 @@ const actionCreators = {
       }),
       router = routerMiddleware(hashHistory),
       enhancer = compose(
-        applyMiddleware(thunk, router, logger),
+        applyMiddleware(require('redux-immutable-state-invariant')(), thunk, router, logger),
         window.devToolsExtension ?
           window.devToolsExtension({ actionCreators }) :
           (noop) => noop

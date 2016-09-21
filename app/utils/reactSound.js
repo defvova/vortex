@@ -48,6 +48,8 @@ class Sound extends React.Component {
     position: T.number,
     playFromPosition: T.number,
     volume: T.number,
+    mute: T.bool,
+    unMute: T.bool,
     onLoading: T.func,
     onPlaying: T.func,
     onFinishedPlaying: T.func,
@@ -58,6 +60,8 @@ class Sound extends React.Component {
   static defaultProps = {
     playFromPosition: 0,
     volume: 100,
+    mute: false,
+    unMute: false,
     onLoading: noop,
     onPlaying: noop,
     onFinishedPlaying: noop,
@@ -67,9 +71,7 @@ class Sound extends React.Component {
 
   componentDidMount() {
     this.createSound((sound) => {
-      if (this.props.playStatus === playStatuses.PLAYING) {
-        sound.play()
-      }
+      this.props.playStatus === playStatuses.PLAYING && sound.play()
     })
   }
 
@@ -84,36 +86,24 @@ class Sound extends React.Component {
       }
 
       if (this.props.playStatus === playStatuses.PLAYING) {
-        if (sound.playState === 0) {
-          sound.play()
-        }
-
-        if (sound.paused) {
-          sound.resume()
-        }
+        sound.playState === 0 && sound.play()
+        sound.paused && sound.resume()
       } else if (this.props.playStatus === playStatuses.STOPPED) {
-        if (sound.playState !== 0) {
-          sound.stop()
-        }
-      } else if (!sound.paused) { // this.props.playStatus === playStatuses.PAUSED
+        sound.playState !== 0 && sound.stop()
+      } else if (!sound.paused) {
         sound.pause()
       }
 
-      if (this.props.playFromPosition !== prevProps.playFromPosition) {
-        sound.setPosition(this.props.playFromPosition)
-      }
+      this.props.playFromPosition !== prevProps.playFromPosition && sound.setPosition(this.props.playFromPosition)
 
-      if (this.props.position != null) { // eslint-disable-line no-eq-null
-        if (sound.position !== this.props.position &&
-          Math.round(sound.position) !== Math.round(this.props.position)) {
+      this.props.position != null && // eslint-disable-line no-eq-null
+      sound.position !== this.props.position &&
+      Math.round(sound.position) !== Math.round(this.props.position) &&
+      sound.setPosition(this.props.position)
 
-          sound.setPosition(this.props.position)
-        }
-      }
-
-      if (this.props.volume !== prevProps.volume) {
-        sound.setVolume(this.props.volume)
-      }
+      this.props.volume !== prevProps.volume && sound.setVolume(this.props.volume)
+      this.props.mute && sound.mute()
+      this.props.unMute && sound.unmute()
     }
 
     if (this.props.url !== prevProps.url) {

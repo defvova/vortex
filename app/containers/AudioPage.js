@@ -11,24 +11,36 @@ import {
   songStopped,
   songPaused,
   songPlaying,
-  updateSongPosition,
   songNext,
-  songPrev,
-  updatePlayFromPosition,
-  updateBytesLoaded
+  songPrev
 } from '../actions/song'
 
-class HomePage extends Component {
+class AudioPage extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      position: props.position,
+      elapsed: props.elapsed,
+      duration: props.duration,
+      playFromPosition: props.playFromPosition,
+      bytesLoaded: props.bytesLoaded,
+      volume: props.volume,
+      prevVolume: props.prevVolume,
+      mute: props.mute
+    }
+  }
+
   componentWillMount() {
     const { dispatch } = this.props
 
     dispatch(fetchAudios())
   }
 
-  handleSongSelected = (currentSong, index) => {
+  handleSongSelected = (song, index) => {
     const { dispatch } = this.props
 
-    dispatch(songPlayed(currentSong, index))
+    dispatch(songPlayed(song, index))
   }
 
   handleSongPaused = () => {
@@ -40,6 +52,7 @@ class HomePage extends Component {
   handleSongStopped = () => {
     const { dispatch } = this.props
 
+    this.setState({ elapsed: 0, position: 0 })
     dispatch(songStopped())
   }
 
@@ -49,55 +62,57 @@ class HomePage extends Component {
     dispatch(songPlaying())
   }
 
-  handleSongPrev = (currentSong, index) => {
+  handleSongPrev = (song, index) => {
     const { dispatch } = this.props
 
-    dispatch(songPrev(currentSong, index))
+    dispatch(songPrev(song, index))
   }
 
-  handleSongNext = (currentSong, count, index) => {
+  handleSongNext = (song, count, index) => {
     const { dispatch } = this.props
 
-    dispatch(songNext(currentSong, count, index))
+    dispatch(songNext(song, count, index))
   }
 
   handleSongPosition = (audio) => {
-    const { dispatch } = this.props,
-          elapsed = audio.position,
+    const elapsed = audio.position,
           duration = audio.duration,
           position = audio.position / audio.duration
 
-    dispatch(updateSongPosition(elapsed, duration, position))
+    this.setState({ elapsed, duration, position })
   }
 
-  handlePlayFromPosition = (position) => {
-    const { dispatch } = this.props
-
-    dispatch(updatePlayFromPosition(position))
+  handlePlayFromPosition = (playFromPosition) => {
+    this.setState({ playFromPosition })
   }
 
   handleBytesLoaded = (audio) => {
-    const { dispatch } = this.props
+    this.setState({ bytesLoaded: audio.bytesLoaded })
+  }
 
-    dispatch(updateBytesLoaded(audio.bytesLoaded))
+  handleVolume = (volume) => {
+    this.setState({ volume, mute: false })
+  }
+
+  handleMute = () => {
+    const { mute, volume, prevVolume } = this.state
+
+    mute && this.setState({ volume: prevVolume, mute: !mute })
+    !mute && this.setState({ prevVolume: volume, volume: 0, mute: !mute })
   }
 
   render() {
     const { audio, song } = this.props,
+          { duration, elapsed, bytesLoaded, position, playFromPosition, volume, mute } = this.state,
           url = song.get('url'),
           playStatus = song.get('playStatus'),
-          position = song.get('position'),
-          volume = song.get('volume'),
           currentAid = song.get('aid'),
           count = audio.get('count'),
           list = audio.get('list'),
           songIndex = song.get('songIndex'),
           artist = song.get('artist'),
           title = song.get('title'),
-          duration = song.get('duration'),
-          elapsed = song.get('elapsed'),
-          playFromPosition = song.get('playFromPosition'),
-          bytesLoaded = song.get('bytesLoaded')
+          unMute = !mute
 
     return (
       <div>
@@ -118,7 +133,11 @@ class HomePage extends Component {
           elapsed={elapsed}
           position={position}
           bytesLoaded={bytesLoaded}
+          volume={volume}
+          onVolume={this.handleVolume.bind(this)}
           onSongPosition={this.handlePlayFromPosition.bind(this)}
+          onMute={this.handleMute.bind()}
+          mute={mute}
           playStatus={playStatus} />
         <SongSelector
           count={count}
@@ -136,6 +155,8 @@ class HomePage extends Component {
           onPlaying={this.handleSongPosition.bind(this)}
           playFromPosition={playFromPosition}
           onLoading={this.handleBytesLoaded.bind(this)}
+          mute={mute}
+          unMute={unMute}
           volume={volume} />
         <br />
       </div>
@@ -143,7 +164,7 @@ class HomePage extends Component {
   }
 }
 
-HomePage.propTypes = {
+AudioPage.propTypes = {
   audio: I.mapContains({
     list: I.list.isRequired,
     count: T.number.isRequired,
@@ -152,12 +173,31 @@ HomePage.propTypes = {
   song: I.mapContains({
     url: T.string.isRequired,
     aid: T.number,
-    position: T.number.isRequired,
-    volume: T.number.isRequired,
+    title: T.string.isRequired,
+    artist: T.string.isRequired,
     playStatus: T.string.isRequired,
     songIndex: T.number.isRequired
   }).isRequired,
-  dispatch: T.func.isRequired
+  dispatch: T.func.isRequired,
+  position: T.number.isRequired,
+  elapsed: T.number.isRequired,
+  duration: T.number.isRequired,
+  playFromPosition: T.number.isRequired,
+  volume: T.number.isRequired,
+  prevVolume: T.number.isRequired,
+  mute: T.bool.isRequired,
+  bytesLoaded: T.number.isRequired
+}
+
+AudioPage.defaultProps = {
+  position: 0,
+  elapsed: 0,
+  duration: 0,
+  playFromPosition: 0,
+  bytesLoaded: 0,
+  volume: 100,
+  prevVolume: 100,
+  mute: false
 }
 
 function mapStateToProps(state) {
@@ -166,4 +206,4 @@ function mapStateToProps(state) {
   return { audio, song }
 }
 
-export default connect(mapStateToProps)(HomePage)
+export default connect(mapStateToProps)(AudioPage)
