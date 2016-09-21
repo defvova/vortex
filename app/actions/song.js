@@ -2,33 +2,30 @@ export const SONG_PLAYED = 'SONG_PLAYED',
       SONG_STOPPED = 'SONG_STOPPED',
       SONG_PAUSED = 'SONG_PAUSED',
       SONG_PLAYING = 'SONG_PLAYING',
-      SET_SONG_POSITION = 'SET_SONG_POSITION',
       SONG_NEXT = 'SONG_NEXT',
-      SONG_PREV = 'SONG_PREV',
-      SET_PLAY_FROM_POSITION = 'SET_PLAY_FROM_POSITION',
-      SET_BYTES_LOADED = 'SET_BYTES_LOADED'
+      SONG_PREV = 'SONG_PREV'
 
-export function songPlayed(currentSong, index) {
+export function songPlayed(song, index) {
   return {
     type: SONG_PLAYED,
-    currentSong,
+    song,
     index
   }
 }
 
-export function songNext(currentSong, count, index) {
+export function songNext(song, count, index) {
   return {
     type: SONG_NEXT,
-    currentSong,
+    song,
     index,
     count
   }
 }
 
-export function songPrev(currentSong, index) {
+export function songPrev(song, index) {
   return {
     type: SONG_PREV,
-    currentSong,
+    song,
     index
   }
 }
@@ -48,28 +45,5 @@ export function songPaused() {
 export function songPlaying() {
   return {
     type: SONG_PLAYING
-  }
-}
-
-export function updateSongPosition(elapsed, duration, position) {
-  return {
-    type: SET_SONG_POSITION,
-    elapsed,
-    duration,
-    position
-  }
-}
-
-export function updatePlayFromPosition(position) {
-  return {
-    type: SET_PLAY_FROM_POSITION,
-    position
-  }
-}
-
-export function updateBytesLoaded(bytesLoaded) {
-  return {
-    type: SET_BYTES_LOADED,
-    bytesLoaded
   }
 }

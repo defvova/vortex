@@ -1,6 +1,7 @@
 import React, { Component, PropTypes as T } from 'react'
 import I from 'react-immutable-proptypes'
 import { remote } from 'electron'
+import classNames from 'classnames'
 import styles from './PlayerControl.scss'
 import { formatMilliseconds } from '../../utils/formatMilliseconds'
 
@@ -46,8 +47,23 @@ class PlayerControl extends Component {
     onSongPosition(position)
   }
 
+  handleVolume = (el) => {
+    const { onVolume } = this.props,
+          target = el.target.getBoundingClientRect(),
+          top = target.top,
+          height = target.height,
+          offset = top + height - window.pageYOffset,
+          value = Math.round((offset - el.nativeEvent.clientY))
+
+    onVolume(Math.min(Math.max(value, 0), 100))
+  }
+
   progressBar = (position) => {
     return { width: `${(position / 1) * 100}%` }
+  }
+
+  volumeBar = (volume) => {
+    return { height: `${volume}%` }
   }
 
   render() {
@@ -62,14 +78,22 @@ class PlayerControl extends Component {
       duration,
       elapsed,
       position,
-      bytesLoaded
+      bytesLoaded,
+      volume,
+      onMute,
+      mute
     } = this.props,
           controls = {
             play: playStatus === soundStatuses.STOPPED,
             stop: playStatus !== soundStatuses.STOPPED,
             pause: playStatus === soundStatuses.PLAYING,
             resume: playStatus === soundStatuses.PAUSED
-          }
+          },
+          nameClass = classNames({
+            ['volume-up']: !mute && volume > 50,
+            ['volume-down']: !mute && volume < 50 && volume > 0,
+            ['volume-off']: volume == 0
+          })
 
     return (
       <div className={styles.player}>
@@ -98,10 +122,17 @@ class PlayerControl extends Component {
           { controls.pause && this.control('pause', onPause.bind()) }
           { controls.resume && this.control('play', onResume.bind()) }
           { this.control('step-forward', this.handleSongNext.bind()) }
-          { this.control('lock', this.handleSongNext.bind())}
-          { this.control('repeat', this.handleSongNext.bind())}
-          { this.control('random', this.handleSongNext.bind())}
-          { this.control('volume-up', this.handleSongNext.bind())}
+          { this.control('lock', this.handleSongNext.bind()) }
+          { this.control('repeat', this.handleSongNext.bind()) }
+          { this.control('random', this.handleSongNext.bind()) }
+          <div className={styles.volumeContainer}>
+            <div className={styles.volume}>
+              <div className={styles.track} onClick={this.handleVolume.bind(this)}>
+                <div className={styles.bar} style={this.volumeBar(volume)} />
+              </div>
+            </div>
+            { this.control(nameClass, onMute.bind()) }
+          </div>
         </div>
       </div>
     )
@@ -116,6 +147,8 @@ PlayerControl.propTypes = {
   onPrev: T.func.isRequired,
   onSongSelected: T.func.isRequired,
   onSongPosition: T.func.isRequired,
+  onVolume: T.func.isRequired,
+  onMute: T.func.isRequired,
   list: I.listOf(
     I.mapContains({
       aid: T.number.isRequired,
@@ -135,7 +168,9 @@ PlayerControl.propTypes = {
   position: T.number.isRequired,
   bytesLoaded: T.number,
   artist: T.string.isRequired,
-  title: T.string.isRequired
+  title: T.string.isRequired,
+  volume: T.number.isRequired,
+  mute: T.bool.isRequired
 }
 
 export default PlayerControl
