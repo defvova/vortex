@@ -3,6 +3,9 @@ import thunk from 'redux-thunk'
 import createLogger from 'redux-logger'
 import { hashHistory } from 'react-router'
 import { routerMiddleware, push } from 'react-router-redux'
+import perflogger from 'redux-perf-middleware'
+import reduxUnhandledAction from 'redux-unhandled-action'
+import freeze from 'redux-freeze'
 import rootReducer from '../reducers'
 
 import * as audio from '../actions/audio'
@@ -18,8 +21,19 @@ const actionCreators = {
         collapsed: true
       }),
       router = routerMiddleware(hashHistory),
+      callback = (action) => {
+        console.error(`${action} didn't lead to creation of a new state object`) // eslint-disable-line no-console
+      },
       enhancer = compose(
-        applyMiddleware(require('redux-immutable-state-invariant')(), thunk, router, logger),
+        applyMiddleware(
+          require('redux-immutable-state-invariant')(),
+          reduxUnhandledAction(callback),
+          freeze,
+          perflogger,
+          thunk,
+          router,
+          logger
+        ),
         window.devToolsExtension ?
           window.devToolsExtension({ actionCreators }) :
           (noop) => noop

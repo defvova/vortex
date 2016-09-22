@@ -88,9 +88,13 @@
     "react-router": "^2.8.1",
     "react-router-redux": "^4.0.5",
     "redux": "^3.6.0",
+    "redux-freeze": "^0.1.4",
     "redux-immutable-state-invariant": "^1.2.3",
     "redux-logger": "^2.6.1",
+    "redux-perf-middleware": "^1.2.1",
+    "redux-raven-middleware": "^1.1.0",
     "redux-thunk": "^2.1.0",
+    "redux-unhandled-action": "^1.2.0",
     "sass-loader": "^4.0.2",
     "sinon": "^1.17.6",
     "soundmanager2": "^2.97.20150601-a",
@@ -100,7 +104,8 @@
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.7.0",
     "webpack-hot-middleware": "^2.12.2",
-    "webpack-merge": "^0.14.1"
+    "webpack-merge": "^0.14.1",
+    "why-did-you-update": "0.0.8"
   },
   "dependencies": {
     "source-map-support": "^0.4.2"

@@ -14,21 +14,31 @@ class PlayerControl extends Component {
   }
 
   handleSongNext = () => {
-    const { onNext, list, count } = this.props
-    let { songIndex } = this.props
+    const { onNext, list, count, shuffle } = this.props
+    let { songIndex } = this.props,
+        index = null
 
-    songIndex += 1
-    const index = Math.min(count, songIndex) // eslint-disable-line one-var
+    if (shuffle) {
+      index = Math.floor(Math.random() * list.size)
+    } else {
+      songIndex += 1
+      index = Math.min(count, songIndex)
+    }
 
     onNext(list.get(index), count, index)
   }
 
   handleSongPrev = () => {
-    const { onPrev, list } = this.props
-    let { songIndex } = this.props
+    const { onPrev, list, shuffle } = this.props
+    let { songIndex } = this.props,
+        index = null
 
-    songIndex -= 1
-    const index = Math.max(0, songIndex) // eslint-disable-line one-var
+    if (shuffle) {
+      index = Math.floor(Math.random() * list.size)
+    } else {
+      songIndex -= 1
+      index = Math.max(0, songIndex)
+    }
 
     onPrev(list.get(index), index)
   }
@@ -81,7 +91,8 @@ class PlayerControl extends Component {
       bytesLoaded,
       volume,
       onMute,
-      mute
+      mute,
+      onShuffle
     } = this.props,
           controls = {
             play: playStatus === soundStatuses.STOPPED,
@@ -123,8 +134,8 @@ class PlayerControl extends Component {
           { controls.resume && this.control('play', onResume.bind()) }
           { this.control('step-forward', this.handleSongNext.bind()) }
           { this.control('lock', this.handleSongNext.bind()) }
-          { this.control('repeat', this.handleSongNext.bind()) }
-          { this.control('random', this.handleSongNext.bind()) }
+          { this.control('repeat', onShuffle.bind()) }
+          { this.control('random', onShuffle.bind()) }
           <div className={styles.volumeContainer}>
             <div className={styles.volume}>
               <div className={styles.track} onClick={this.handleVolume.bind(this)}>
@@ -170,7 +181,9 @@ PlayerControl.propTypes = {
   artist: T.string.isRequired,
   title: T.string.isRequired,
   volume: T.number.isRequired,
-  mute: T.bool.isRequired
+  mute: T.bool.isRequired,
+  shuffle: T.bool.isRequired,
+  onShuffle: T.func.isRequired
 }
 
 export default PlayerControl
