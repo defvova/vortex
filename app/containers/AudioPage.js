@@ -27,7 +27,8 @@ class AudioPage extends Component {
       bytesLoaded: props.bytesLoaded,
       volume: props.volume,
       prevVolume: props.prevVolume,
-      mute: props.mute
+      mute: props.mute,
+      shuffle: props.shuffle
     }
   }
 
@@ -101,9 +102,15 @@ class AudioPage extends Component {
     !mute && this.setState({ prevVolume: volume, volume: 0, mute: !mute })
   }
 
+  handleShuffle = () => {
+    const { shuffle } = this.state
+
+    this.setState({ shuffle: !shuffle })
+  }
+
   render() {
     const { audio, song } = this.props,
-          { duration, elapsed, bytesLoaded, position, playFromPosition, volume, mute } = this.state,
+          { duration, elapsed, bytesLoaded, position, playFromPosition, volume, mute, shuffle } = this.state,
           url = song.get('url'),
           playStatus = song.get('playStatus'),
           currentAid = song.get('aid'),
@@ -138,6 +145,8 @@ class AudioPage extends Component {
           onSongPosition={this.handlePlayFromPosition.bind(this)}
           onMute={this.handleMute.bind()}
           mute={mute}
+          onShuffle={this.handleShuffle.bind()}
+          shuffle={shuffle}
           playStatus={playStatus} />
         <SongSelector
           count={count}
@@ -186,7 +195,8 @@ AudioPage.propTypes = {
   volume: T.number.isRequired,
   prevVolume: T.number.isRequired,
   mute: T.bool.isRequired,
-  bytesLoaded: T.number.isRequired
+  bytesLoaded: T.number.isRequired,
+  shuffle: T.bool.isRequired
 }
 
 AudioPage.defaultProps = {
@@ -197,7 +207,8 @@ AudioPage.defaultProps = {
   bytesLoaded: 0,
   volume: 100,
   prevVolume: 100,
-  mute: false
+  mute: false,
+  shuffle: false
 }
 
 function mapStateToProps(state) {

@@ -6,9 +6,14 @@ import { syncHistoryWithStore } from 'react-router-redux'
 import routes from './routes'
 import configureStore from './store/configureStore'
 import './app.global.scss'
+import { whyDidYouUpdate } from 'why-did-you-update'
 
 const store = configureStore(),
       history = syncHistoryWithStore(hashHistory, store)
+
+if (process.env.NODE_ENV !== 'production') {
+  whyDidYouUpdate(React, { include: /^pure/ })
+}
 
 render(
   <Provider store={store}>
