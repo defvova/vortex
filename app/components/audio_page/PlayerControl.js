@@ -13,36 +13,6 @@ class PlayerControl extends Component {
     onSongSelected(list.get(index), index)
   }
 
-  handleSongNext = () => {
-    const { onNext, list, count, shuffle } = this.props
-    let { songIndex } = this.props,
-        index = null
-
-    if (shuffle) {
-      index = Math.floor(Math.random() * list.size)
-    } else {
-      songIndex += 1
-      index = Math.min(count, songIndex)
-    }
-
-    onNext(list.get(index), count, index)
-  }
-
-  handleSongPrev = () => {
-    const { onPrev, list, shuffle } = this.props
-    let { songIndex } = this.props,
-        index = null
-
-    if (shuffle) {
-      index = Math.floor(Math.random() * list.size)
-    } else {
-      songIndex -= 1
-      index = Math.max(0, songIndex)
-    }
-
-    onPrev(list.get(index), index)
-  }
-
   control = (nameClass, clickHandler) => {
     const cl = `fa fa-${nameClass}`
 
@@ -81,6 +51,8 @@ class PlayerControl extends Component {
       onPause,
       onResume,
       onStopped,
+      onPrev,
+      onNext,
       playStatus,
       soundStatuses,
       artist,
@@ -127,13 +99,13 @@ class PlayerControl extends Component {
           </div>
         </div>
         <div className={styles.controls}>
-          { this.control('step-backward', this.handleSongPrev.bind()) }
+          { this.control('step-backward', onPrev.bind()) }
           { controls.play && this.control('play', this.handleSongChange.bind()) }
           { controls.stop && this.control('stop', onStopped.bind()) }
           { controls.pause && this.control('pause', onPause.bind()) }
           { controls.resume && this.control('play', onResume.bind()) }
-          { this.control('step-forward', this.handleSongNext.bind()) }
-          { this.control('lock', this.handleSongNext.bind()) }
+          { this.control('step-forward', onNext.bind()) }
+          { this.control('lock', onNext.bind()) }
           { this.control('repeat', onShuffle.bind()) }
           { this.control('random', onShuffle.bind()) }
           <div className={styles.volumeContainer}>
