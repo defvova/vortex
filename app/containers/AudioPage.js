@@ -63,16 +63,41 @@ class AudioPage extends Component {
     dispatch(songPlaying())
   }
 
-  handleSongPrev = (song, index) => {
-    const { dispatch } = this.props
+  handleSongPrev = () => {
+    const { dispatch, audio, song } = this.props,
+          { shuffle } = this.state,
+          list = audio.get('list')
 
-    dispatch(songPrev(song, index))
+    let songIndex = song.get('songIndex'),
+        index = null
+
+    if (shuffle) {
+      index = Math.floor(Math.random() * list.size)
+    } else {
+      songIndex -= 1
+      index = Math.max(0, songIndex)
+    }
+
+    dispatch(songPrev(list.get(index), index))
   }
 
-  handleSongNext = (song, count, index) => {
-    const { dispatch } = this.props
+  handleSongNext = () => {
+    const { audio, song, dispatch } = this.props,
+          { shuffle } = this.state,
+          list = audio.get('list'),
+          count = audio.get('count')
 
-    dispatch(songNext(song, count, index))
+    let songIndex = song.get('songIndex'),
+        index = null
+
+    if (shuffle) {
+      index = Math.floor(Math.random() * list.size)
+    } else {
+      songIndex += 1
+      index = Math.min(count, songIndex)
+    }
+
+    dispatch(songNext(list.get(index), count, index))
   }
 
   handleSongPosition = (audio) => {
@@ -131,8 +156,8 @@ class AudioPage extends Component {
           onPause={this.handleSongPaused.bind()}
           onResume={this.handleSongResume.bind()}
           onStopped={this.handleSongStopped.bind()}
-          onNext={this.handleSongNext.bind(this)}
-          onPrev={this.handleSongPrev.bind(this)}
+          onNext={this.handleSongNext.bind()}
+          onPrev={this.handleSongPrev.bind()}
           title={title}
           artist={artist}
           list={list}
@@ -166,7 +191,8 @@ class AudioPage extends Component {
           onLoading={this.handleBytesLoaded.bind(this)}
           mute={mute}
           unMute={unMute}
-          volume={volume} />
+          volume={volume}
+          onFinishedPlaying={this.handleSongNext.bind()} />
         <br />
       </div>
     )
