@@ -87,16 +87,13 @@ class PlayerControl extends Component {
         </div>
         <div className={styles.details}>
           <img className={styles.thumb} src='https://i.scdn.co/image/9932849b7e42a167b0e2992435ba3c276d59b37c' />
-          <h2 className={styles.title}>{title}</h2>
           <div className={styles.inner}>
+            <h2 className={styles.title}>{title}</h2>
             <h4 className={styles.artist}>{artist}</h4>
             <div className={styles.time}>
               <span className={styles.current}>{formatMilliseconds(elapsed)}</span>
               <span>{formatMilliseconds(duration)}</span>
             </div>
-          </div>
-          <div className={styles.quality}>
-            <span>320 кб/с</span>
           </div>
         </div>
         <div className={styles.controls}>
