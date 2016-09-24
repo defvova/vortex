@@ -35,6 +35,8 @@ class AudioPage extends Component {
   componentWillMount() {
     const { dispatch } = this.props
 
+    process.env.NODE_ENV === 'production' && window.settings.visitor.pageview('/AudioPage').send()
+
     dispatch(fetchAudios())
   }
 
