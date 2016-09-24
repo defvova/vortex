@@ -11,17 +11,17 @@
   z-index: 100;
 
   .details {
+    display: flex;
     width: 300px;
     padding: 5px;
     text-align: left;
     float: left;
 
     img {
+      display: block;
       height: 50px;
       width: 50px;
-      float: left;
       cursor: pointer;
-      padding-right: 10px;
     }
 
     .title {
@@ -33,14 +33,25 @@
     }
 
     .inner {
-      display: flex;
+      float: left;
+      padding: 4px;
+      width: 100%;
+
+      h2,
+      h4 {
+        margin: 0;
+      }
+
+      h4 {
+        float: left;
+        max-width: 158px;
+        margin-right: 4px;
+      }
     }
 
     .artist {
-      display: inline-block;
       color: #CCC;
       font-size: 14px;
-      padding: 2px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -48,16 +59,10 @@
       cursor: pointer;
     }
 
-    .quality {
-      display: flex;
-      color: #CCC;
-      font-size: 14px;
-    }
-
     .time {
+      float: left;
       display: inline-block;
       font-size: 14px;
-      padding: 3px 10px;
       vertical-align: top;
       color: #CCC;
 

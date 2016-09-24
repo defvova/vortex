@@ -110,6 +110,7 @@
     "redux-raven-middleware": "^1.1.0",
     "redux-thunk": "^2.1.0",
     "redux-unhandled-action": "^1.2.0",
+    "sanitize.css": "^4.1.0",
     "sass-loader": "^4.0.2",
     "sinon": "^1.17.6",
     "soundmanager2": "^2.97.20150601-a",

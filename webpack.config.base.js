@@ -12,6 +12,10 @@ export default {
     }, {
       test: /\.json$/,
       loader: 'json-loader'
+    }, {
+      test: /\.css$/,
+      include: /node_modules/,
+      loaders: ['style-loader', 'css-loader']
     }]
   },
   output: {
