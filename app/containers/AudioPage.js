@@ -28,7 +28,8 @@ class AudioPage extends Component {
       volume: props.volume,
       prevVolume: props.prevVolume,
       mute: props.mute,
-      shuffle: props.shuffle
+      shuffle: props.shuffle,
+      repeat: props.repeat
     }
   }
 
@@ -85,21 +86,25 @@ class AudioPage extends Component {
 
   handleSongNext = () => {
     const { audio, song, dispatch } = this.props,
-          { shuffle } = this.state,
+          { shuffle, repeat } = this.state,
           list = audio.get('list'),
           count = audio.get('count')
 
     let songIndex = song.get('songIndex'),
         index = null
 
-    if (shuffle) {
-      index = Math.floor(Math.random() * list.size)
+    if (repeat) {
+      this.setState({ playFromPosition: 0 })
     } else {
-      songIndex += 1
-      index = Math.min(count, songIndex)
-    }
+      if (shuffle) {
+        index = Math.floor(Math.random() * list.size)
+      } else {
+        songIndex += 1
+        index = Math.min(count, songIndex)
+      }
 
-    dispatch(songNext(list.get(index), count, index))
+      dispatch(songNext(list.get(index), count, index))
+    }
   }
 
   handleSongPosition = (audio) => {
@@ -133,6 +138,12 @@ class AudioPage extends Component {
     const { shuffle } = this.state
 
     this.setState({ shuffle: !shuffle })
+  }
+
+  handleRepeat = () => {
+    const { repeat } = this.state
+
+    this.setState({ repeat: !repeat })
   }
 
   render() {
@@ -174,6 +185,7 @@ class AudioPage extends Component {
           mute={mute}
           onShuffle={this.handleShuffle.bind()}
           shuffle={shuffle}
+          onRepeat={this.handleRepeat.bind()}
           playStatus={playStatus} />
         <SongSelector
           count={count}
@@ -224,7 +236,8 @@ AudioPage.propTypes = {
   prevVolume: T.number.isRequired,
   mute: T.bool.isRequired,
   bytesLoaded: T.number.isRequired,
-  shuffle: T.bool.isRequired
+  shuffle: T.bool.isRequired,
+  repeat: T.bool.isRequired
 }
 
 AudioPage.defaultProps = {
@@ -236,7 +249,8 @@ AudioPage.defaultProps = {
   volume: 100,
   prevVolume: 100,
   mute: false,
-  shuffle: false
+  shuffle: false,
+  repeat: false
 }
 
 function mapStateToProps(state) {
