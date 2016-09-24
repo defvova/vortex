@@ -86,9 +86,8 @@ class AudioPage extends Component {
 
   handleSongNext = () => {
     const { audio, song, dispatch } = this.props,
-          { shuffle, repeat } = this.state,
-          list = audio.get('list'),
-          count = audio.get('count')
+          { list, count } = audio.toObject(),
+          { shuffle, repeat } = this.state
 
     let songIndex = song.get('songIndex'),
         index = null
@@ -149,14 +148,8 @@ class AudioPage extends Component {
   render() {
     const { audio, song } = this.props,
           { duration, elapsed, bytesLoaded, position, playFromPosition, volume, mute, shuffle } = this.state,
-          url = song.get('url'),
-          playStatus = song.get('playStatus'),
-          currentAid = song.get('aid'),
-          count = audio.get('count'),
-          list = audio.get('list'),
-          songIndex = song.get('songIndex'),
-          artist = song.get('artist'),
-          title = song.get('title'),
+          { url, playStatus, aid, songIndex, artist, title } = song.toObject(),
+          { count, list } = audio.toObject(),
           unMute = !mute
 
     return (
@@ -192,7 +185,7 @@ class AudioPage extends Component {
           list={list}
           playStatus={playStatus}
           soundStatuses={Sound.status}
-          currentAid={currentAid}
+          currentAid={aid}
           onPause={this.handleSongPaused.bind()}
           onResume={this.handleSongResume.bind()}
           onStopped={this.handleSongStopped.bind()}
@@ -254,7 +247,7 @@ AudioPage.defaultProps = {
 }
 
 function mapStateToProps(state) {
-  const { audio, song } = state
+  const { audio, song } = state.toObject()
 
   return { audio, song }
 }

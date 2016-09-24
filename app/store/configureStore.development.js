@@ -6,6 +6,7 @@ import { routerMiddleware, push } from 'react-router-redux'
 import perflogger from 'redux-perf-middleware'
 import reduxUnhandledAction from 'redux-unhandled-action'
 import freeze from 'redux-freeze'
+import { Map } from 'immutable'
 import rootReducer from '../reducers'
 
 import * as audio from '../actions/audio'
@@ -16,6 +17,7 @@ const actionCreators = {
         ...song,
         push
       },
+      initialState = Map(),
       logger = createLogger({
         level: 'info',
         collapsed: true
@@ -39,7 +41,7 @@ const actionCreators = {
           (noop) => noop
       )
 
-export default function configureStore(initialState) {
+export default function configureStore() {
   const store = createStore(rootReducer, initialState, enhancer)
 
   if (window.devToolsExtension) {

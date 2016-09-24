@@ -9,7 +9,11 @@ import './app.global.scss'
 import { whyDidYouUpdate } from 'why-did-you-update'
 
 const store = configureStore(),
-      history = syncHistoryWithStore(hashHistory, store)
+      history = syncHistoryWithStore(hashHistory, store, {
+        selectLocationState(state) {
+          return state.get('routing')
+        }
+      })
 
 if (process.env.NODE_ENV !== 'production') {
   whyDidYouUpdate(React, { include: /^pure/ })
