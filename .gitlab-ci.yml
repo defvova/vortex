@@ -4,7 +4,7 @@ stages:
   - setup
   - build
   - test
-  - eslint
+  - lint
   # - test-e2e
 
 cache:
@@ -39,8 +39,8 @@ test:
   script:
     - npm run test
 
-eslint:
-  stage: eslint
+lint:
+  stage: lint
   script:
     - npm run lint
 
