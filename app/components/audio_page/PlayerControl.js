@@ -64,7 +64,8 @@ class PlayerControl extends Component {
       volume,
       onMute,
       mute,
-      onShuffle
+      onShuffle,
+      onRepeat
     } = this.props,
           controls = {
             play: playStatus === soundStatuses.STOPPED,
@@ -106,7 +107,7 @@ class PlayerControl extends Component {
           { controls.resume && this.control('play', onResume.bind()) }
           { this.control('step-forward', onNext.bind()) }
           { this.control('lock', onNext.bind()) }
-          { this.control('repeat', onShuffle.bind()) }
+          { this.control('repeat', onRepeat.bind()) }
           { this.control('random', onShuffle.bind()) }
           <div className={styles.volumeContainer}>
             <div className={styles.volume}>
@@ -155,7 +156,8 @@ PlayerControl.propTypes = {
   volume: T.number.isRequired,
   mute: T.bool.isRequired,
   shuffle: T.bool.isRequired,
-  onShuffle: T.func.isRequired
+  onShuffle: T.func.isRequired,
+  onRepeat: T.func.isRequired
 }
 
 export default PlayerControl
