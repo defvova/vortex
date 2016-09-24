@@ -13,9 +13,7 @@ class SongSelector extends Component {
 
   control = (song, cls, index, clickHandler) => {
     const { currentAid } = this.props,
-          title = song.get('title'),
-          aid = song.get('aid'),
-          artist = song.get('artist'),
+          { title, aid, artist } = song.toObject(),
           nameClass = classNames({
             [styles.active]: aid == currentAid
           }),

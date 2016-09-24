@@ -106,7 +106,6 @@ class PlayerControl extends Component {
           { controls.pause && this.control('pause', onPause.bind()) }
           { controls.resume && this.control('play', onResume.bind()) }
           { this.control('step-forward', onNext.bind()) }
-          { this.control('lock', onNext.bind()) }
           { this.control('repeat', onRepeat.bind()) }
           { this.control('random', onShuffle.bind()) }
           <div className={styles.volumeContainer}>
