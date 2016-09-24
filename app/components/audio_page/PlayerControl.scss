@@ -38,7 +38,7 @@
 
     .artist {
       display: inline-block;
-      color: #ccc;
+      color: #CCC;
       font-size: 14px;
       padding: 2px 0;
       white-space: nowrap;
@@ -50,7 +50,7 @@
 
     .quality {
       display: flex;
-      color: #ccc;
+      color: #CCC;
       font-size: 14px;
     }
 
@@ -59,7 +59,7 @@
       font-size: 14px;
       padding: 3px 10px;
       vertical-align: top;
-      color: #ccc;
+      color: #CCC;
 
       .current:not(:empty) {
         &::after {
@@ -77,10 +77,10 @@
     a {
       font-size: 20px;
       margin-left: 20px;
-
     }
 
-    .repeat, .random {
+    .repeat,
+    .random {
       font-size: 14px !important;
     }
 
@@ -117,7 +117,7 @@
         opacity: 0;
         visibility: hidden;
         transform: translateY(10px);
-        transition: all .3s cubic-bezier(0.17, 0.72, 0.26, 1.23);
+        transition: all 0.3s cubic-bezier(0.17, 0.72, 0.26, 1.23);
         background: $sectionBackground;
         border: 1px solid $separatorDarkColor;
         border-radius: 1px;
@@ -193,7 +193,7 @@
     background-color: rgba(0, 0, 0, 0.15);
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.2);;
+      background-color: rgba(255, 255, 255, 0.2);
 
       .loaded {
         display: none;

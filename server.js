@@ -2,6 +2,7 @@
 
 import express from 'express'
 import webpack from 'webpack'
+import compression from 'compression'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 
@@ -19,6 +20,7 @@ const app = express(),
 
 app.use(wdm)
 app.use(webpackHotMiddleware(compiler))
+app.use(compression())
 
 const server = app.listen(PORT, 'localhost', (err) => { // eslint-disable-line one-var
   if (err) {
