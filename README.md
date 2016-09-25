@@ -100,4 +100,4 @@ Use `electron-packager` to pack your app with `--all` options for darwin (osx), 
 see discusses in [#118](https://github.com/chentsulin/electron-react-boilerplate/issues/118) and [#108](https://github.com/chentsulin/electron-react-boilerplate/issues/108)
 
 ## License
-MIT © [Volodimir Partytskyi](https://github.com/0bman)
+GNU GPLv2 © [Volodimir Partytskyi](https://github.com/0bman)
