@@ -1,36 +1,48 @@
 import React, { Component, PropTypes as T } from 'react'
 import { connect } from 'react-redux'
 import I from 'react-immutable-proptypes'
+import { Howl } from 'howler/dist/howler.min'
 
 import SongSelector from '../components/audio_page/SongSelector'
 import PlayerControl from '../components/audio_page/PlayerControl'
-import Sound from '../utils/reactSound'
-import { fetchAudios } from '../actions/audio'
 import {
-  songPlayed,
-  songStopped,
-  songPaused,
-  songPlaying,
-  songNext,
-  songPrev
-} from '../actions/song'
+  fetchAudios,
+  updateStatus,
+  updateLoop,
+  updateShuffle,
+  updateVolume,
+  updateMute,
+  STATUS
+} from '../actions/audio'
 
 class AudioPage extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      position: props.position,
+      progress: props.progress,
       elapsed: props.elapsed,
       duration: props.duration,
-      playFromPosition: props.playFromPosition,
-      bytesLoaded: props.bytesLoaded,
-      volume: props.volume,
-      prevVolume: props.prevVolume,
-      mute: props.mute,
-      shuffle: props.shuffle,
-      repeat: props.repeat
+      bytesLoaded: props.bytesLoaded
     }
+
+    this.howles = window.Howler._howls
+    this.play = this.play.bind()
+    this.pause = this.pause.bind()
+    this.resume = this.resume.bind()
+    this.stop = this.stop.bind()
+    this.skipTo = this.skipTo.bind()
+    this.songNext = this.songNext.bind()
+    this.songPrev = this.songPrev.bind()
+    this.loop = this.loop.bind()
+    this.shuffle = this.shuffle.bind()
+    this.mute = this.mute.bind()
+    this.volume = this.volume.bind()
+    this.seek = this.seek.bind()
+    this.step = this.step.bind()
+    this.bytesLoaded = this.bytesLoaded.bind()
+
+    window.Howler.mobileAutoEnable = false
   }
 
   componentWillMount() {
@@ -41,215 +53,294 @@ class AudioPage extends Component {
     dispatch(fetchAudios())
   }
 
-  handleSongSelected = (song, index) => {
-    const { dispatch } = this.props
+  play = (index) => {
+    const { audio, dispatch } = this.props,
+          { currentIndex, isLoop } = audio.toObject(),
+          i = typeof index === 'number' ? index : currentIndex,
+          url = audio.getIn(['list', i, 'url'])
 
-    dispatch(songPlayed(song, index))
+    let howl = null
+
+    if (this.howles[i]) {
+      howl = this.howles[i]
+    } else {
+      howl = new Howl({
+        src: url,
+        html5: true,
+        loop: isLoop,
+        onplay: () => {
+          this.setState({ duration: Math.round(howl.duration()) })
+          requestAnimationFrame(this.step)
+          requestAnimationFrame(this.bytesLoaded)
+          howl.loop(isLoop)
+        },
+        onseek: () => {
+          requestAnimationFrame(this.bytesLoaded)
+        },
+        onend: () => {
+          if (!howl.loop()) {
+            this.songNext()
+          }
+        }
+      })
+      this.howles[i] = howl
+    }
+
+    howl.play()
+
+    dispatch(updateStatus(i, STATUS.playing))
   }
 
-  handleSongPaused = () => {
-    const { dispatch } = this.props
+  pause = () => {
+    const { audio, dispatch } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index]
 
-    dispatch(songPaused())
+    howl.pause()
+    dispatch(updateStatus(index, STATUS.paused))
   }
 
-  handleSongStopped = () => {
-    const { dispatch } = this.props
+  resume = () => {
+    const { audio, dispatch } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index]
 
-    this.setState({ elapsed: 0, position: 0 })
-    dispatch(songStopped())
+    howl.play()
+    dispatch(updateStatus(index, STATUS.playing))
   }
 
-  handleSongResume = () => {
-    const { dispatch } = this.props
+  stop = () => {
+    const { audio, dispatch } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index]
 
-    dispatch(songPlaying())
+    if (howl) {
+      howl.stop()
+      dispatch(updateStatus(index, STATUS.stopped))
+    }
   }
 
-  handleSongPrev = () => {
-    const { dispatch, audio, song } = this.props,
-          { shuffle } = this.state,
-          list = audio.get('list')
+  songNext = () => {
+    const { audio } = this.props,
+          { list, isShuffle, count, currentIndex } = audio.toObject()
 
-    let songIndex = song.get('songIndex'),
+    let i = currentIndex,
         index = null
 
-    if (shuffle) {
+    if (isShuffle) {
       index = Math.floor(Math.random() * list.size)
     } else {
-      songIndex -= 1
-      index = Math.max(0, songIndex)
+      i += 1
+      index = Math.min(count, i)
     }
 
-    dispatch(songPrev(list.get(index), index))
+    this.skipTo(index)
   }
 
-  handleSongNext = () => {
-    const { audio, song, dispatch } = this.props,
-          { list, count } = audio.toObject(),
-          { shuffle, repeat } = this.state
+  songPrev = () => {
+    const { audio } = this.props,
+          { list, isShuffle, currentIndex } = audio.toObject()
 
-    let songIndex = song.get('songIndex'),
+    let i = currentIndex,
         index = null
 
-    if (repeat) {
-      this.setState({ playFromPosition: 0 })
+    if (isShuffle) {
+      index = Math.floor(Math.random() * list.size)
     } else {
-      if (shuffle) {
-        index = Math.floor(Math.random() * list.size)
-      } else {
-        songIndex += 1
-        index = Math.min(count, songIndex)
-      }
+      i -= 1
+      index = Math.max(0, i)
+    }
 
-      dispatch(songNext(list.get(index), count, index))
+    this.skipTo(index)
+  }
+
+  skipTo = (index) => {
+    this.stop()
+    this.play(index)
+  }
+
+  loop = () => {
+    const { audio, dispatch } = this.props,
+          index = audio.get('currentIndex'),
+          isLoop = audio.get('isLoop'),
+          howl = this.howles[index]
+
+    if (howl) {
+      howl.loop(!isLoop)
+    }
+
+    dispatch(updateLoop())
+  }
+
+  shuffle = () => {
+    const { dispatch } = this.props
+
+    dispatch(updateShuffle())
+  }
+
+  mute = () => {
+    const { audio, dispatch } = this.props,
+          { isMute, volume, prevVolume } = audio.toObject()
+
+    let vol = null,
+        prevVol = null
+
+    window.Howler.mute(!isMute)
+
+    if (isMute) {
+      vol = prevVolume
+      prevVol = prevVolume
+    } else {
+      vol = 0
+      prevVol = volume
+    }
+
+    dispatch(updateMute(vol, prevVol))
+  }
+
+  volume = (volume) => {
+    const { dispatch } = this.props,
+          isMute = false
+
+    window.Howler.mute(isMute)
+    window.Howler.volume(volume)
+
+    dispatch(updateVolume(volume, isMute))
+  }
+
+  step = () => {
+    const { audio } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index],
+          seek = howl.seek(),
+          progress = (seek / howl.duration()) * 100,
+          elapsed = Math.round(seek)
+
+    this.setState({ progress, elapsed })
+
+    if (howl && howl.playing()) {
+      requestAnimationFrame(this.step)
     }
   }
 
-  handleSongPosition = (audio) => {
-    const elapsed = audio.position,
-          duration = audio.duration,
-          position = audio.position / audio.duration
+  bytesLoaded = () => {
+    const { audio } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index],
+          sound = howl._sounds[0]._node,
+          buffered = sound.buffered,
+          time = sound.currentTime,
+          duration = sound.duration,
+          seek = howl.seek()
 
-    this.setState({ elapsed, duration, position })
+    let range = 0
+
+    while (buffered.length > range + 1 && !(buffered.start(range) <= time && time <= buffered.end(range))) {
+      range += 1
+    }
+
+    const loadStartPercentage = buffered.length != 0 && buffered.start(range) / duration, // eslint-disable-line one-var
+          loadEndPercentage = buffered.length != 0 && buffered.end(range) / duration,
+          loaded = loadEndPercentage - loadStartPercentage,
+          bytesLoaded = (loaded + (seek / duration)) * 100
+
+    this.setState({ bytesLoaded })
+
+    if (bytesLoaded <= 100) {
+      requestAnimationFrame(this.bytesLoaded)
+    }
   }
 
-  handlePlayFromPosition = (playFromPosition) => {
-    this.setState({ playFromPosition })
-  }
+  seek = (per) => {
+    const { audio } = this.props,
+          index = audio.get('currentIndex'),
+          howl = this.howles[index]
 
-  handleBytesLoaded = (audio) => {
-    this.setState({ bytesLoaded: audio.bytesLoaded })
-  }
-
-  handleVolume = (volume) => {
-    this.setState({ volume, mute: false })
-  }
-
-  handleMute = () => {
-    const { mute, volume, prevVolume } = this.state
-
-    mute && this.setState({ volume: prevVolume, mute: !mute })
-    !mute && this.setState({ prevVolume: volume, volume: 0, mute: !mute })
-  }
-
-  handleShuffle = () => {
-    const { shuffle } = this.state
-
-    this.setState({ shuffle: !shuffle })
-  }
-
-  handleRepeat = () => {
-    const { repeat } = this.state
-
-    this.setState({ repeat: !repeat })
+    if (howl && howl.playing()) {
+      howl.seek(howl.duration() * per)
+    }
   }
 
   render() {
-    const { audio, song } = this.props,
-          { duration, elapsed, bytesLoaded, position, playFromPosition, volume, mute, shuffle } = this.state,
-          { url, playStatus, aid, songIndex, artist, title } = song.toObject(),
-          { count, list } = audio.toObject(),
-          unMute = !mute
+    const { audio } = this.props,
+          { count, list, currentIndex, status, volume, isMute, artist, title } = audio.toObject(),
+          { progress, elapsed, duration, bytesLoaded } = this.state
 
     return (
       <div>
-        <PlayerControl
-          soundStatuses={Sound.status}
-          count={count}
-          songIndex={songIndex}
-          onSongSelected={this.handleSongSelected.bind(this)}
-          onPause={this.handleSongPaused.bind()}
-          onResume={this.handleSongResume.bind()}
-          onStopped={this.handleSongStopped.bind()}
-          onNext={this.handleSongNext.bind()}
-          onPrev={this.handleSongPrev.bind()}
-          title={title}
-          artist={artist}
-          list={list}
-          duration={duration}
-          elapsed={elapsed}
-          position={position}
-          bytesLoaded={bytesLoaded}
-          volume={volume}
-          onVolume={this.handleVolume.bind(this)}
-          onSongPosition={this.handlePlayFromPosition.bind(this)}
-          onMute={this.handleMute.bind()}
-          mute={mute}
-          onShuffle={this.handleShuffle.bind()}
-          shuffle={shuffle}
-          onRepeat={this.handleRepeat.bind()}
-          playStatus={playStatus} />
         <SongSelector
           count={count}
           list={list}
-          playStatus={playStatus}
-          soundStatuses={Sound.status}
-          currentAid={aid}
-          onPause={this.handleSongPaused.bind()}
-          onResume={this.handleSongResume.bind()}
-          onStopped={this.handleSongStopped.bind()}
-          onSongSelected={this.handleSongSelected.bind(this)} />
-        <Sound
-          url={url}
-          playStatus={playStatus}
-          onPlaying={this.handleSongPosition.bind(this)}
-          playFromPosition={playFromPosition}
-          onLoading={this.handleBytesLoaded.bind(this)}
-          mute={mute}
-          unMute={unMute}
+          currentIndex={currentIndex}
+          currentStatus={status}
+          status={STATUS}
+          onPause={this.pause}
+          onResume={this.resume}
+          onSkipTo={this.skipTo} />
+        <PlayerControl
+          status={STATUS}
+          currentStatus={status}
+          currentIndex={currentIndex}
           volume={volume}
-          onFinishedPlaying={this.handleSongNext.bind()} />
-        <br />
+          isMute={isMute}
+          progress={progress}
+          bytesLoaded={bytesLoaded}
+          elapsed={elapsed}
+          duration={duration}
+          title={title}
+          artist={artist}
+          onSeek={this.seek}
+          onVolume={this.volume}
+          onMute={this.mute}
+          onPause={this.pause}
+          onResume={this.resume}
+          onStop={this.stop}
+          onShuffle={this.shuffle}
+          onSongNext={this.songNext}
+          onSongPrev={this.songPrev}
+          onLoop={this.loop}
+          onPlay={this.play} />
       </div>
     )
   }
 }
 
 AudioPage.propTypes = {
-  audio: I.mapContains({
-    list: I.list.isRequired,
-    count: T.number.isRequired,
-    isLoading: T.bool.isRequired
-  }).isRequired,
-  song: I.mapContains({
-    url: T.string.isRequired,
-    aid: T.number,
-    title: T.string.isRequired,
-    artist: T.string.isRequired,
-    playStatus: T.string.isRequired,
-    songIndex: T.number.isRequired
-  }).isRequired,
   dispatch: T.func.isRequired,
-  position: T.number.isRequired,
+  audio: I.mapContains({
+    list: I.listOf(
+      I.mapContains({
+        aid: T.number.isRequired,
+        title: T.string.isRequired,
+        artist: T.string.isRequired,
+        url: T.string.isRequired,
+        status: T.string.isRequired
+      })
+    ).isRequired,
+    count: T.number.isRequired,
+    isLoading: T.bool.isRequired,
+    currentIndex: T.number,
+    status: T.string.isRequired,
+    isLoop: T.bool.isRequired,
+    isShuffle: T.bool.isRequired
+  }).isRequired,
+  progress: T.number.isRequired,
   elapsed: T.number.isRequired,
   duration: T.number.isRequired,
-  playFromPosition: T.number.isRequired,
-  volume: T.number.isRequired,
-  prevVolume: T.number.isRequired,
-  mute: T.bool.isRequired,
-  bytesLoaded: T.number.isRequired,
-  shuffle: T.bool.isRequired,
-  repeat: T.bool.isRequired
+  bytesLoaded: T.number.isRequired
 }
 
 AudioPage.defaultProps = {
-  position: 0,
+  progress: 0,
   elapsed: 0,
   duration: 0,
-  playFromPosition: 0,
-  bytesLoaded: 0,
-  volume: 100,
-  prevVolume: 100,
-  mute: false,
-  shuffle: false,
-  repeat: false
+  bytesLoaded: 0
 }
 
 function mapStateToProps(state) {
-  const { audio, song } = state.toObject()
+  const { audio } = state.toObject()
 
-  return { audio, song }
+  return { audio }
 }
 
 export default connect(mapStateToProps)(AudioPage)

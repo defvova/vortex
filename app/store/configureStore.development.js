@@ -10,11 +10,9 @@ import { Map } from 'immutable'
 import rootReducer from '../reducers'
 
 import * as audio from '../actions/audio'
-import * as song from '../actions/song'
 
 const actionCreators = {
         ...audio,
-        ...song,
         push
       },
       initialState = Map(),
