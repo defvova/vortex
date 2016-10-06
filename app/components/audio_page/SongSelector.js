@@ -4,18 +4,24 @@ import styles from './SongSelector.scss'
 import classNames from 'classnames'
 
 class SongSelector extends Component {
-  handleSongChange = (el) => {
-    const { list, onSongSelected } = this.props,
-          index = el.target.getAttribute('value')
+  constructor(props) {
+    super(props)
 
-    onSongSelected(list.get(index), parseInt(index))
+    this.handlePlay = this.handlePlay.bind()
+  }
+
+  handlePlay = (el) => {
+    const { onSkipTo } = this.props,
+          index = parseInt(el.target.getAttribute('value'))
+
+    onSkipTo(index)
   }
 
   control = (song, cls, index, clickHandler) => {
-    const { currentAid } = this.props,
-          { title, aid, artist } = song.toObject(),
+    const { currentIndex, currentStatus, status } = this.props,
+          { title, artist } = song.toObject(),
           nameClass = classNames({
-            [styles.active]: aid == currentAid
+            [styles.active]: index == currentIndex && currentStatus !== status.stopped
           }),
           icon = `fa fa-${cls}`
 
@@ -30,13 +36,13 @@ class SongSelector extends Component {
     )
   }
 
-  controls = (aid) => {
-    const { playStatus, soundStatuses, currentAid } = this.props
+  controls = (index, songStatus) => {
+    const { currentIndex, status } = this.props
 
     return {
-      play: aid !== currentAid,
-      pause: aid === currentAid && playStatus === soundStatuses.PLAYING,
-      resume: aid === currentAid && playStatus === soundStatuses.PAUSED
+      play: status.stopped === songStatus,
+      pause: index === currentIndex && status.playing === songStatus,
+      resume: index === currentIndex && status.paused === songStatus
     }
   }
 
@@ -49,11 +55,11 @@ class SongSelector extends Component {
         <ul>
         {list.map((song, index) =>
           <li key={index}>
-            { this.controls(song.get('aid')).play &&
-              this.control(song, 'play', index, this.handleSongChange.bind(this)) }
-            { this.controls(song.get('aid')).pause &&
+            { this.controls(index, song.get('status')).play &&
+              this.control(song, 'play', index, this.handlePlay) }
+            { this.controls(index, song.get('status')).pause &&
               this.control(song, 'pause', index, onPause.bind()) }
-            { this.controls(song.get('aid')).resume &&
+            { this.controls(index, song.get('status')).resume &&
               this.control(song, 'play', index, onResume.bind()) }
           </li>
         )}
@@ -66,21 +72,24 @@ class SongSelector extends Component {
 SongSelector.propTypes = {
   onPause: T.func.isRequired,
   onResume: T.func.isRequired,
-  onSongSelected: T.func.isRequired,
+  onSkipTo: T.func.isRequired,
   count: T.number.isRequired,
+  currentIndex: T.number,
+  currentStatus: T.string.isRequired,
+  status: T.shape({
+    playing: T.string.isRequired,
+    paused: T.string.isRequired,
+    stopped: T.string.isRequired
+  }).isRequired,
   list: I.listOf(
     I.mapContains({
       aid: T.number.isRequired,
-      title: T.string.isRequired
+      title: T.string.isRequired,
+      artist: T.string.isRequired,
+      url: T.string.isRequired,
+      status: T.string.isRequired
     })
-  ),
-  playStatus: T.oneOf(['PLAYING', 'PAUSED', 'STOPPED']).isRequired,
-  soundStatuses: T.shape({
-    PLAYING: T.string.isRequired,
-    PAUSED: T.string.isRequired,
-    STOPPED: T.string.isRequired
-  }).isRequired,
-  currentAid: T.number
+  ).isRequired
 }
 
 export default SongSelector
