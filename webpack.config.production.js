@@ -1,7 +1,9 @@
 import webpack from 'webpack'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import purify from 'purifycss-webpack-plugin'
 import merge from 'webpack-merge'
 import baseConfig from './webpack.config.base'
+import CleanWebpackPlugin from 'clean-webpack-plugin'
 
 const config = merge(baseConfig, {
   devtool: 'cheap-module-source-map',
@@ -38,6 +40,10 @@ const config = merge(baseConfig, {
   },
 
   plugins: [
+    new CleanWebpackPlugin(['dist', 'release'], {
+      root: __dirname,
+      verbose: true
+    }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
@@ -48,7 +54,18 @@ const config = merge(baseConfig, {
         warnings: false
       }
     }),
-    new ExtractTextPlugin('style.css', { allChunks: true })
+    new ExtractTextPlugin('style.css', { allChunks: true }),
+    new purify({
+      basePath: __dirname,
+      paths: [
+        'app/app.html'
+      ],
+      purifyOptions: {
+        info: true,
+        minify: true,
+        rejected: true
+      }
+    })
   ],
 
   target: 'electron-renderer'
