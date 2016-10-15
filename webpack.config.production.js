@@ -54,16 +54,12 @@ const config = merge(baseConfig, {
         warnings: false
       }
     }),
-    new ExtractTextPlugin('style.css', { allChunks: true }),
+    new ExtractTextPlugin('[name].css', { allChunks: true }),
     new purify({
       basePath: __dirname,
-      paths: [
-        'app/app.html'
-      ],
       purifyOptions: {
         info: true,
-        minify: true,
-        rejected: true
+        minify: true
       }
     })
   ],

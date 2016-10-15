@@ -5,8 +5,8 @@ import { Router, hashHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import routes from './routes'
 import configureStore from './store/configureStore'
-import 'sanitize.css/sanitize.css'
 import './app.global.scss'
+import '../node_modules/bulma/css/bulma.css'
 import { whyDidYouUpdate } from 'why-did-you-update'
 
 const store = configureStore(),

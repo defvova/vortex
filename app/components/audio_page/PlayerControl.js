@@ -1,6 +1,5 @@
 import React, { Component, PropTypes as T } from 'react'
 import classNames from 'classnames'
-import styles from './PlayerControl.scss'
 import { formatTime } from '../../utils/formatTime'
 
 class PlayerControl extends Component {
@@ -12,76 +11,26 @@ class PlayerControl extends Component {
     }
 
     this.handleVolume = this.handleVolume.bind()
-    this.move = this.move.bind()
     this.handleSeek = this.handleSeek.bind()
   }
 
-  componentDidMount() {
-    this.refs.move.addEventListener('mousemove', this.move)
-    this.refs.move.addEventListener('touchmove', this.move)
-
-    this.refs.move.addEventListener('mousedown', () => {
-      this.setState({ sliderDown: true })
-    })
-    this.refs.move.addEventListener('touchstart', () => {
-      this.setState({ sliderDown: true })
-    })
-    this.refs.move.addEventListener('mouseup', () => {
-      this.setState({ sliderDown: false })
-    })
-    this.refs.move.addEventListener('touchend', () => {
-      this.setState({ sliderDown: false })
-    })
-    this.refs.move.addEventListener('mouseleave', () => {
-      this.setState({ sliderDown: false })
-    })
-  }
-
-  componentWillUnmount() {
-    this.refs.move.removeEventListener('mousemove', this.move)
-    this.refs.move.removeEventListener('touchmove', this.move)
-
-    this.refs.move.removeEventListener('mousedown', () => {
-      this.setState({ sliderDown: true })
-    })
-    this.refs.move.removeEventListener('touchstart', () => {
-      this.setState({ sliderDown: true })
-    })
-    this.refs.move.removeEventListener('mouseup', () => {
-      this.setState({ sliderDown: false })
-    })
-    this.refs.move.removeEventListener('touchend', () => {
-      this.setState({ sliderDown: false })
-    })
-    this.refs.move.removeEventListener('mouseleave', () => {
-      this.setState({ sliderDown: false })
-    })
-  }
-
-  move = (event) => {
-    const { sliderDown } = this.state
-
-    if (sliderDown) {
-      this.handleVolume(event)
-    }
-  }
-
   control = (nameClass, clickHandler) => {
-    const cl = `fa fa-${nameClass}`
+    const cl = `fa fa-${nameClass} ${nameClass}`
 
-    return <a className={styles[nameClass]}><i className={cl} onClick={clickHandler} /></a>
+    return (
+      <span className='icon is-small'>
+        <a className={nameClass}>
+          <i className={cl} onClick={clickHandler} />
+        </a>
+      </span>
+    )
   }
 
   handleVolume = (event) => {
     const { onVolume } = this.props,
-          target = event.target.getBoundingClientRect(),
-          top = target.top,
-          height = target.height,
-          offset = top + height,
-          clientY = event.nativeEvent ? event.nativeEvent.clientY : event.clientY,
-          value = Math.round((offset - clientY)) / 100
+          value = event.target.value
 
-    onVolume(Math.min(Math.max(value, 0), 1))
+    onVolume(parseInt(value))
   }
 
   handleSeek = (event) => {
@@ -107,7 +56,6 @@ class PlayerControl extends Component {
       onPlay,
       onSongNext,
       onSongPrev,
-      onStop,
       onPause,
       onResume,
       onLoop,
@@ -122,53 +70,64 @@ class PlayerControl extends Component {
       progress,
       bytesLoaded,
       artist,
-      title
+      title,
+      isLoop,
+      isShuffle
     } = this.props,
           controls = {
             play: status.stopped === currentStatus,
-            stop: status.stopped !== currentStatus,
             pause: status.playing === currentStatus,
             resume: status.paused === currentStatus
           },
-          nameClass = classNames({
-            ['volume-up']: !isMute && volume > 0.5,
-            ['volume-down']: !isMute && volume <= 0.5 && volume > 0.0,
-            ['volume-off']: volume == 0.0
+          volumeClasses = classNames({
+            'volume-up': !isMute && volume > 50,
+            'volume-down': !isMute && volume <= 50 && volume > 0,
+            'volume-off': volume == 0
+          }),
+          loopActive = classNames({
+            'loop-active': isLoop
+          }),
+          shuffleActive = classNames({
+            'shuffle-active': isShuffle
           })
 
     return (
-      <div className={styles.player}>
-        <div className={styles.progress} onClick={this.handleSeek}>
-          <div className={styles.bar} style={this.progressBar(progress)} />
-          <div className={styles.loaded} style={this.progressBar(bytesLoaded)} />
+      <div className='player columns is-multiline is-gapless'>
+        <div className='progress column is-12' onClick={this.handleSeek}>
+          <div className='bar' style={this.progressBar(progress)} />
+          <div className='loaded' style={this.progressBar(bytesLoaded)} />
         </div>
-        <div className={styles.details}>
-          <img className={styles.thumb} src='https://i.scdn.co/image/9932849b7e42a167b0e2992435ba3c276d59b37c' />
-          <div className={styles.inner}>
-            <div className={styles.time}>
-              <h2 className={styles.title}>{title}</h2>
-              <h4 className={styles.artist}>{artist}</h4>
-              <span className={styles.current}>{formatTime(elapsed)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
-        </div>
-        <div className={styles.controls}>
+        <div className='column is-one-quarter has-text-centered controls'>
           { this.control('step-backward', onSongPrev.bind()) }
           { controls.play && this.control('play', onPlay.bind()) }
-          { controls.stop && this.control('stop', onStop.bind()) }
           { controls.pause && this.control('pause', onPause.bind()) }
           { controls.resume && this.control('play', onResume.bind()) }
           { this.control('step-forward', onSongNext.bind()) }
-          { this.control('repeat', onLoop.bind()) }
-          { this.control('random', onShuffle.bind()) }
-          <div className={styles.volumeContainer}>
-            <div className={styles.volume}>
-              <div className={styles.track} ref='move' onClick={this.handleVolume}>
-                <div className={styles.bar} style={this.volumeBar()} />
+        </div>
+        <div className='column is-6'>
+          <div className='details'>
+            <b>{title}</b> - <i>{artist}</i>
+          </div>
+        </div>
+        <div className='column has-text-right'>
+          <div className='actions'>
+            <div>{ this.control('headphones', onLoop.bind())}</div>
+            <div className={loopActive}>{ this.control('repeat', onLoop.bind()) }</div>
+            <div className={shuffleActive}>{ this.control('random', onShuffle.bind()) }</div>
+            <div className='volume'>
+              { this.control(volumeClasses, onMute.bind()) }
+              <div className='popover'>
+                <input
+                  className='range'
+                  value={volume}
+                  type='range'
+                  min='0'
+                  max='100'
+                  step='1'
+                  onChange={this.handleVolume} />
               </div>
             </div>
-            { this.control(nameClass, onMute.bind()) }
+            <div><span className='durations'>{formatTime(elapsed)} / {formatTime(duration)}</span></div>
           </div>
         </div>
       </div>
@@ -178,7 +137,6 @@ class PlayerControl extends Component {
 
 PlayerControl.propTypes = {
   onPlay: T.func.isRequired,
-  onStop: T.func.isRequired,
   onPause: T.func.isRequired,
   onResume: T.func.isRequired,
   onSongNext: T.func.isRequired,
@@ -203,7 +161,9 @@ PlayerControl.propTypes = {
   elapsed: T.number.isRequired,
   duration: T.number.isRequired,
   progress: T.number.isRequired,
-  bytesLoaded: T.number.isRequired
+  bytesLoaded: T.number.isRequired,
+  isShuffle: T.bool.isRequired,
+  isLoop: T.bool.isRequired
 }
 
 PlayerControl.defaultProps = {

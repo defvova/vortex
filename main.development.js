@@ -1,4 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
+import windowStateKeeper from 'electron-window-state'
 import auth from './app/api/provider/auth'
 import configStore from './app/utils/configstore'
 import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './app/api/config'
@@ -35,10 +36,19 @@ const installExtensions = async () => {
 app.on('ready', async () => {
   await installExtensions()
 
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 1024,
+    defaultHeight: 728
+  })
+
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    minHeight: 500,
+    minWidth: 780
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`)
@@ -52,6 +62,8 @@ app.on('ready', async () => {
     mainWindow = null
     // configStore.clear()
   })
+
+  mainWindowState.manage(mainWindow)
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools()
@@ -81,3 +93,5 @@ app.on('ready', async () => {
     })
   })
 })
+
+app.setName('Vortex')

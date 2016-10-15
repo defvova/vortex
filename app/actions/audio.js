@@ -6,7 +6,6 @@ export const REQUEST_AUDIOS = 'REQUEST_AUDIOS',
       UPDATE_STATUS = 'UPDATE_STATUS',
       UPDATE_LOOP = 'UPDATE_LOOP',
       UPDATE_SHUFFLE = 'UPDATE_SHUFFLE',
-      UPDATE_VOLUME = 'UPDATE_VOLUME',
       UPDATE_MUTE = 'UPDATE_MUTE',
       STATUS = {
         stopped: 'stopped',
@@ -23,14 +22,6 @@ export function updateMute(volume, prevVolume) {
     type: UPDATE_MUTE,
     volume,
     prevVolume
-  }
-}
-
-export function updateVolume(volume, isMute) {
-  return {
-    type: UPDATE_VOLUME,
-    volume,
-    isMute
   }
 }
 
@@ -78,7 +69,8 @@ export function fetchAudios() {
           artist: audio.artist,
           title: audio.title,
           url: audio.url,
-          status: STATUS.stopped
+          status: STATUS.stopped,
+          duration: audio.duration
         })
       })
       dispatch(receiveAudios(count, list))

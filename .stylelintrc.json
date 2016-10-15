@@ -1,14 +1,29 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
+    "indentation": "tab",
+    "string-quotes": "single",
     "color-hex-case": "upper",
     "string-quotes": "single",
+    "declaration-block-properties-order": "alphabetical",
     "font-family-name-quotes": "always-where-recommended",
+    "declaration-colon-space-after": "always-single-line",
+    "declaration-bang-space-before": "always",
+    "declaration-block-no-duplicate-properties": true,
+    "declaration-block-semicolon-space-before": "never",
+    "block-closing-brace-empty-line-before": "never",
+    "no-duplicate-selectors": true,
+    "no-extra-semicolons": true,
+    "no-eol-whitespace": true,
+    "unit-case": "lower",
+    "property-case": "lower",
+    "shorthand-property-no-redundant-values": true,
     "selector-pseudo-class-no-unknown": [
       true,
       {
         "ignorePseudoClasses": [
-          "global"
+          "global",
+          "vertical"
         ]
       }
     ],

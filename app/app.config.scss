@@ -1,9 +1,37 @@
-$bodyBackground: #121314;
-$defaultColor: #FFF;
-$linkColor: #FFF;
-$scColor: #F50;
-$sectionBackground: #222326;
-$separatorDarkColor: #000;
-$transitionValue: all 0.5s ease;
-$transitionFastValue: all 0.25s ease;
-$transitionInstantValue: all 0.1s ease-out;
+$transition-value: all 0.3s;
+$transition-instant-value: all 0.1s ease-out;
+
+$dark: #000;
+$grey-darker: #4A5664;
+$grey-dark: #ADABAB;
+$grey-light: #E2DEDE;
+$grey: #7A7A7A;
+$white: #FFF;
+$blue-light: #6698C8;
+
+$dark-lategray: #303E4D;
+$turquoise: #00D1B2;
+
+$nav-border-color: $grey-light;
+
+$player-active-link: $blue-light;
+$player-background: $dark-lategray;
+$player-text-color: $white;
+$player-separator-color: $dark;
+$player-min-height: 59px;
+$player-control-max-width: 200px;
+$player-volume-popover-background: $white;
+$player-volume-popover-border-color: $grey-light;
+$player-volume-range-background: $grey-dark;
+$player-volume-bar-color: $blue-light;
+$player-progress-background: rgba(0, 0, 0, 0.35);
+$player-progress-seek-bar-hover: $grey-dark;
+$player-progress-seek-bar-loaded: $grey;
+$player-progress-bar-height: 0.3rem;
+$player-progress-bar-background: $blue-light;
+
+$scrollbar-background: $grey-light;
+$scrollbar-hover: rgba(0, 0, 0, 0.09);
+$scrollbar-thumb-background: rgba(0, 0, 0, 0.5);
+$scrollbar-thumb-border-color: $grey-light;
+$scrollbar-thumb-active-background: rgba(0, 0, 0, 0.61);

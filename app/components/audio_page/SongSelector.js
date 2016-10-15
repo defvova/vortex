@@ -1,38 +1,38 @@
 import React, { Component, PropTypes as T } from 'react'
 import I from 'react-immutable-proptypes'
-import styles from './SongSelector.scss'
 import classNames from 'classnames'
+import Header from './Header'
+import { formatTime } from '../../utils/formatTime'
 
 class SongSelector extends Component {
-  constructor(props) {
-    super(props)
-
-    this.handlePlay = this.handlePlay.bind()
-  }
-
-  handlePlay = (el) => {
-    const { onSkipTo } = this.props,
-          index = parseInt(el.target.getAttribute('value'))
+  handlePlay = (index) => {
+    const { onSkipTo } = this.props
 
     onSkipTo(index)
   }
 
   control = (song, cls, index, clickHandler) => {
     const { currentIndex, currentStatus, status } = this.props,
-          { title, artist } = song.toObject(),
+          { title, artist, duration } = song.toObject(),
           nameClass = classNames({
-            [styles.active]: index == currentIndex && currentStatus !== status.stopped
+            'active': index == currentIndex && currentStatus !== status.stopped
           }),
           icon = `fa fa-${cls}`
 
     return (
-      <div className={styles.inner}>
-        <a className={nameClass} onClick={clickHandler}><i value={index} className={icon} /></a>
-        <div className={styles.details}>
-          <div>{title}</div>
-          <div>{artist}</div>
-        </div>
-      </div>
+      <tr key={index} onClick={clickHandler}>
+        <td className='is-icon'>
+          <a className={nameClass}>
+            <i value={index} className={icon} />
+          </a>
+        </td>
+        <td>
+          <b>{title}</b> - <i>{artist}</i>
+        </td>
+        <td>
+          <span>{formatTime(duration)}</span>
+        </td>
+      </tr>
     )
   }
 
@@ -47,24 +47,35 @@ class SongSelector extends Component {
   }
 
   render() {
-    const { onPause, onResume, count, list } = this.props
+    const { onPause, onResume, count, list } = this.props,
+          tbody = list.map((song, index) =>
+            this.controls(
+              index,
+              song.get('status')).play && this.control(song, 'play', index, this.handlePlay.bind(this, index)
+            ) ||
+            this.controls(
+              index,
+              song.get('status')).pause && this.control(song, 'pause', index, onPause.bind()
+            ) ||
+            this.controls(
+              index,
+              song.get('status')).resume && this.control(song, 'play', index, onResume.bind()
+            )
+          )
 
     return (
-      <div className={styles.list}>
-        <h4>Found {count} recordings</h4>
-        <ul>
-        {list.map((song, index) =>
-          <li key={index}>
-            { this.controls(index, song.get('status')).play &&
-              this.control(song, 'play', index, this.handlePlay) }
-            { this.controls(index, song.get('status')).pause &&
-              this.control(song, 'pause', index, onPause.bind()) }
-            { this.controls(index, song.get('status')).resume &&
-              this.control(song, 'play', index, onResume.bind()) }
-          </li>
-        )}
-        </ul>
-      </div>
+      <section className='songs is-paddingless section'>
+        <Header count={count} />
+        <div className='track-content'>
+          <div className='list'>
+            <table className='table is-marginless'>
+              <tbody>
+                {tbody}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     )
   }
 }

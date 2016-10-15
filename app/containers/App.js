@@ -1,21 +1,15 @@
-import React, { Component, PropTypes } from 'react'
-import Header from '../components/app/Header'
-import LeftPanel from '../components/app/LeftPanel'
-import RightPanel from '../components/app/RightPanel'
+import { Component, PropTypes as T } from 'react'
 
-export default class App extends Component {
-  static propTypes = {
-    children: PropTypes.element.isRequired
-  }
-
+class App extends Component {
   render() {
-    return (
-      <div>
-        <Header />
-        <LeftPanel />
-        <RightPanel />
-        {this.props.children}
-      </div>
-    )
+    const { children } = this.props
+
+    return children
   }
 }
+
+App.propTypes = {
+  children: T.element.isRequired
+}
+
+export default App
