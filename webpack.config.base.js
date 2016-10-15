@@ -1,8 +1,8 @@
 import path from 'path'
 import webpack from 'webpack'
-import autoprefixer from 'autoprefixer'
 import postcssFocus from 'postcss-focus'
 import precss from 'precss'
+import postcssSimpleVars from 'postcss-simple-vars'
 
 export default {
   module: {
@@ -37,8 +37,8 @@ export default {
   postcss: () => {
     return [
       postcssFocus,
-      autoprefixer({ browsers: ['last 2 versions'] }),
-      precss
+      precss,
+      postcssSimpleVars
     ]
   },
   externals: [

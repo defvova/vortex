@@ -5,13 +5,12 @@ import { Howl } from 'howler/dist/howler.min'
 
 import SongSelector from '../components/audio_page/SongSelector'
 import PlayerControl from '../components/audio_page/PlayerControl'
+import LeftPanel from '../components/audio_page/LeftPanel'
 import {
   fetchAudios,
   updateStatus,
   updateLoop,
   updateShuffle,
-  updateVolume,
-  updateMute,
   STATUS
 } from '../actions/audio'
 
@@ -22,11 +21,13 @@ class AudioPage extends Component {
     this.state = {
       progress: props.progress,
       elapsed: props.elapsed,
-      duration: props.duration,
-      bytesLoaded: props.bytesLoaded
+      bytesLoaded: props.bytesLoaded,
+      volume: props.volume,
+      prevVolume: props.prevVolume,
+      isMute: props.isMute
     }
 
-    this.howles = window.Howler._howls
+    this.howles = []
     this.play = this.play.bind()
     this.pause = this.pause.bind()
     this.resume = this.resume.bind()
@@ -69,7 +70,6 @@ class AudioPage extends Component {
         html5: true,
         loop: isLoop,
         onplay: () => {
-          this.setState({ duration: Math.round(howl.duration()) })
           requestAnimationFrame(this.step)
           requestAnimationFrame(this.bytesLoaded)
           howl.loop(isLoop)
@@ -179,8 +179,7 @@ class AudioPage extends Component {
   }
 
   mute = () => {
-    const { audio, dispatch } = this.props,
-          { isMute, volume, prevVolume } = audio.toObject()
+    const { isMute, volume, prevVolume } = this.state
 
     let vol = null,
         prevVol = null
@@ -195,25 +194,24 @@ class AudioPage extends Component {
       prevVol = volume
     }
 
-    dispatch(updateMute(vol, prevVol))
+    this.setState({ isMute: !isMute, volume: vol, prevVolume: prevVol })
   }
 
   volume = (volume) => {
-    const { dispatch } = this.props,
-          isMute = false
+    const isMute = false
+
+    this.setState({ volume, isMute })
 
     window.Howler.mute(isMute)
-    window.Howler.volume(volume)
-
-    dispatch(updateVolume(volume, isMute))
+    window.Howler.volume(volume / 100)
   }
 
   step = () => {
     const { audio } = this.props,
-          index = audio.get('currentIndex'),
-          howl = this.howles[index],
+          { currentIndex, duration } = audio.toObject(),
+          howl = this.howles[currentIndex],
           seek = howl.seek(),
-          progress = (seek / howl.duration()) * 100,
+          progress = (seek / duration) * 100,
           elapsed = Math.round(seek)
 
     this.setState({ progress, elapsed })
@@ -225,12 +223,11 @@ class AudioPage extends Component {
 
   bytesLoaded = () => {
     const { audio } = this.props,
-          index = audio.get('currentIndex'),
-          howl = this.howles[index],
+          { currentIndex, duration } = audio.toObject(),
+          howl = this.howles[currentIndex],
           sound = howl._sounds[0]._node,
           buffered = sound.buffered,
           time = sound.currentTime,
-          duration = sound.duration,
           seek = howl.seek()
 
     let range = 0
@@ -253,30 +250,51 @@ class AudioPage extends Component {
 
   seek = (per) => {
     const { audio } = this.props,
-          index = audio.get('currentIndex'),
-          howl = this.howles[index]
+          { currentIndex, duration } = audio.toObject(),
+          howl = this.howles[currentIndex]
 
     if (howl && howl.playing()) {
-      howl.seek(howl.duration() * per)
+      howl.seek(duration * per)
     }
   }
 
   render() {
     const { audio } = this.props,
-          { count, list, currentIndex, status, volume, isMute, artist, title } = audio.toObject(),
-          { progress, elapsed, duration, bytesLoaded } = this.state
+          { count,
+            list,
+            currentIndex,
+            status,
+            artist,
+            title,
+            isLoading,
+            isLoop,
+            isShuffle,
+            duration } = audio.toObject(),
+          { progress,
+            elapsed,
+            bytesLoaded,
+            volume,
+            isMute } = this.state
 
     return (
-      <div>
-        <SongSelector
-          count={count}
-          list={list}
-          currentIndex={currentIndex}
-          currentStatus={status}
-          status={STATUS}
-          onPause={this.pause}
-          onResume={this.resume}
-          onSkipTo={this.skipTo} />
+      <section className='section is-paddingless body'>
+        <div className='columns is-gapless is-marginless'>
+          <div className='column is-one-quarter left-panel '>
+            <LeftPanel />
+          </div>
+          <div className='column'>
+            <SongSelector
+              count={count}
+              list={list}
+              currentIndex={currentIndex}
+              currentStatus={status}
+              status={STATUS}
+              isLoading={isLoading}
+              onPause={this.pause}
+              onResume={this.resume}
+              onSkipTo={this.skipTo} />
+          </div>
+        </div>
         <PlayerControl
           status={STATUS}
           currentStatus={status}
@@ -289,18 +307,19 @@ class AudioPage extends Component {
           duration={duration}
           title={title}
           artist={artist}
+          isLoop={isLoop}
+          isShuffle={isShuffle}
           onSeek={this.seek}
           onVolume={this.volume}
           onMute={this.mute}
           onPause={this.pause}
           onResume={this.resume}
-          onStop={this.stop}
           onShuffle={this.shuffle}
           onSongNext={this.songNext}
           onSongPrev={this.songPrev}
           onLoop={this.loop}
           onPlay={this.play} />
-      </div>
+      </section>
     )
   }
 }
@@ -326,15 +345,19 @@ AudioPage.propTypes = {
   }).isRequired,
   progress: T.number.isRequired,
   elapsed: T.number.isRequired,
-  duration: T.number.isRequired,
-  bytesLoaded: T.number.isRequired
+  bytesLoaded: T.number.isRequired,
+  volume: T.number.isRequired,
+  prevVolume: T.number.isRequired,
+  isMute: T.bool.isRequired
 }
 
 AudioPage.defaultProps = {
   progress: 0,
   elapsed: 0,
-  duration: 0,
-  bytesLoaded: 0
+  bytesLoaded: 0,
+  volume: 100,
+  prevVolume: 100,
+  isMute: false
 }
 
 function mapStateToProps(state) {
