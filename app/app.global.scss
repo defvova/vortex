@@ -111,6 +111,43 @@ html {
         flex-direction: column;
         height: 100%;
 
+        .loading {
+          height: 50px;
+          margin: 20px auto;
+          position: relative;
+          width: 55px;
+
+          span {
+            animation: waving 1.5s infinite ease-in-out;
+            background-color: $blue-light;
+            bottom: 0;
+            display: block;
+            height: 5px;
+            position: absolute;
+            width: 9px;
+          }
+
+          & span:nth-of-type(2) {
+            animation-delay: 0.2s;
+            left: 11px;
+          }
+
+          & span:nth-of-type(3) {
+            animation-delay: 0.4s;
+            left: 22px;
+          }
+
+          & span:nth-of-type(4) {
+            animation-delay: 0.6s;
+            left: 33px;
+          }
+
+          & span:last-of-type {
+            animation-delay: 0.8s;
+            left: 44px;
+          }
+        }
+
         .track-content {
           overflow-y: auto;
 
@@ -388,5 +425,21 @@ html {
   &:active {
     background: $scrollbar-thumb-active-background;
     -webkit-border-radius: 100px;
+  }
+}
+
+@keyframes waving {
+  0%,
+  50%,
+  100% {
+    background-color: $blue-light;
+    height: 5px;
+    transform: translateY(0);
+  }
+
+  25% {
+    background-color: $dark-lategray;
+    height: 30px;
+    transform: translateY(15px);
   }
 }

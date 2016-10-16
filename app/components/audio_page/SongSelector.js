@@ -1,14 +1,24 @@
 import React, { Component, PropTypes as T } from 'react'
 import I from 'react-immutable-proptypes'
 import classNames from 'classnames'
+import Waypoint from 'react-waypoint'
+import throttle from 'lodash.throttle'
 import Header from './Header'
 import { formatTime } from '../../utils/formatTime'
 
 class SongSelector extends Component {
   handlePlay = (index) => {
-    const { onSkipTo } = this.props
+    const { onSkipTo, isLoading } = this.props
 
-    onSkipTo(index)
+    if (!isLoading) {
+      onSkipTo(index)
+    }
+  }
+
+  handleMoreSongs = () => {
+    const { onFetch, step, maxStep } = this.props
+
+    onFetch(step, maxStep)
   }
 
   control = (song, cls, index, clickHandler) => {
@@ -27,9 +37,9 @@ class SongSelector extends Component {
           </a>
         </td>
         <td>
-          <b>{title}</b> - <i>{artist}</i>
+          <b>{artist}</b> - <i>{title}</i>
         </td>
-        <td>
+        <td className='has-text-right'>
           <span>{formatTime(duration)}</span>
         </td>
       </tr>
@@ -43,6 +53,39 @@ class SongSelector extends Component {
       play: status.stopped === songStatus,
       pause: index === currentIndex && status.playing === songStatus,
       resume: index === currentIndex && status.paused === songStatus
+    }
+  }
+
+  renderLoading = () => {
+    const { isLoading } = this.props
+
+    if (isLoading) {
+      return (
+        <div className='loading'>
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      )
+    }
+  }
+
+  renderWaypoint = () => {
+    const { isLoading } = this.props
+
+    if (!isLoading) {
+      return (
+        <tr>
+          <td className='is-paddingless'>
+            <Waypoint
+              onEnter={this.handleMoreSongs.bind()}
+              throttleHandler={(scrollHandler) => throttle(scrollHandler, 100)}
+            />
+          </td>
+        </tr>
+      )
     }
   }
 
@@ -71,8 +114,10 @@ class SongSelector extends Component {
             <table className='table is-marginless'>
               <tbody>
                 {tbody}
+                {this.renderWaypoint()}
               </tbody>
             </table>
+            {this.renderLoading()}
           </div>
         </div>
       </section>
@@ -80,13 +125,22 @@ class SongSelector extends Component {
   }
 }
 
+Waypoint.propTypes = {
+  onEnter: T.func.isRequired,
+  throttleHandler: T.func.isRequired
+}
+
 SongSelector.propTypes = {
   onPause: T.func.isRequired,
   onResume: T.func.isRequired,
   onSkipTo: T.func.isRequired,
+  onFetch: T.func.isRequired,
   count: T.number.isRequired,
   currentIndex: T.number,
   currentStatus: T.string.isRequired,
+  step: T.number.isRequired,
+  maxStep: T.number.isRequired,
+  isLoading: T.bool.isRequired,
   status: T.shape({
     playing: T.string.isRequired,
     paused: T.string.isRequired,
@@ -98,7 +152,8 @@ SongSelector.propTypes = {
       title: T.string.isRequired,
       artist: T.string.isRequired,
       url: T.string.isRequired,
-      status: T.string.isRequired
+      status: T.string.isRequired,
+      duration: T.number.isRequired
     })
   ).isRequired
 }
