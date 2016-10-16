@@ -106,7 +106,7 @@ class PlayerControl extends Component {
         </div>
         <div className='column is-6'>
           <div className='details'>
-            <b>{title}</b> - <i>{artist}</i>
+            <b>{artist}</b> - <i>{title}</i>
           </div>
         </div>
         <div className='column has-text-right'>

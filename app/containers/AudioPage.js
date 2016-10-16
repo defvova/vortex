@@ -28,6 +28,7 @@ class AudioPage extends Component {
     }
 
     this.howles = []
+    this.fetch = this.fetch.bind()
     this.play = this.play.bind()
     this.pause = this.pause.bind()
     this.resume = this.resume.bind()
@@ -52,6 +53,14 @@ class AudioPage extends Component {
     process.env.NODE_ENV === 'production' && window.settings.visitor.pageview('/AudioPage').send()
 
     dispatch(fetchAudios())
+  }
+
+  fetch = (step, maxStep) => {
+    const { dispatch } = this.props
+
+    if (step > 0 && step !== maxStep) {
+      dispatch(fetchAudios(step))
+    }
   }
 
   play = (index) => {
@@ -269,6 +278,8 @@ class AudioPage extends Component {
             isLoading,
             isLoop,
             isShuffle,
+            step,
+            maxStep,
             duration } = audio.toObject(),
           { progress,
             elapsed,
@@ -290,6 +301,9 @@ class AudioPage extends Component {
               currentStatus={status}
               status={STATUS}
               isLoading={isLoading}
+              step={step}
+              maxStep={maxStep}
+              onFetch={this.fetch}
               onPause={this.pause}
               onResume={this.resume}
               onSkipTo={this.skipTo} />
@@ -333,15 +347,22 @@ AudioPage.propTypes = {
         title: T.string.isRequired,
         artist: T.string.isRequired,
         url: T.string.isRequired,
-        status: T.string.isRequired
+        status: T.string.isRequired,
+        duration: T.number.isRequired
       })
     ).isRequired,
     count: T.number.isRequired,
+    offset: T.number.isRequired,
+    step: T.number.isRequired,
+    maxStep: T.number.isRequired,
     isLoading: T.bool.isRequired,
-    currentIndex: T.number,
+    currentIndex: T.number.isRequired,
+    duration: T.number.isRequired,
     status: T.string.isRequired,
     isLoop: T.bool.isRequired,
-    isShuffle: T.bool.isRequired
+    isShuffle: T.bool.isRequired,
+    title: T.string.isRequired,
+    artist: T.string.isRequired
   }).isRequired,
   progress: T.number.isRequired,
   elapsed: T.number.isRequired,

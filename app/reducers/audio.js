@@ -1,16 +1,18 @@
-import { Map, List } from 'immutable'
+import { Map, List, fromJS } from 'immutable'
 import {
   REQUEST_AUDIOS,
   RECEIVE_AUDIOS,
   UPDATE_STATUS,
   UPDATE_LOOP,
-  UPDATE_SHUFFLE,
-  UPDATE_MUTE
+  UPDATE_SHUFFLE
 } from '../actions/audio'
 
 const initState = Map({
   list: List(),
   count: 0,
+  offset: 0,
+  step: 0,
+  maxStep: -1,
   isLoading: false,
   currentIndex: 0,
   duration: 0,
@@ -28,8 +30,11 @@ export default function audio(state = initState, action) {
     case RECEIVE_AUDIOS:
       return state.merge({
         count: action.count,
-        list: action.list,
-        isLoading: false
+        list: state.get('list').concat(fromJS(action.list)),
+        isLoading: false,
+        offset: action.offset,
+        step: action.step,
+        maxStep: Math.ceil(action.count / action.offset)
       })
     case UPDATE_STATUS:
       return state.setIn(['list', action.index, 'status'], action.status).merge({
@@ -43,12 +48,6 @@ export default function audio(state = initState, action) {
       return state.set('isLoop', !state.get('isLoop'))
     case UPDATE_SHUFFLE:
       return state.set('isShuffle', !state.get('isShuffle'))
-    case UPDATE_MUTE:
-      return state.merge({
-        isMute: !state.get('isMute'),
-        volume: action.volume,
-        prevVolume: action.prevVolume
-      })
     default:
       return state
   }
