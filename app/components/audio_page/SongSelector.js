@@ -8,11 +8,9 @@ import { formatTime } from '../../utils/formatTime'
 
 class SongSelector extends Component {
   handlePlay = (index) => {
-    const { onSkipTo, isLoading } = this.props
+    const { onSongSelect } = this.props
 
-    if (!isLoading) {
-      onSkipTo(index)
-    }
+    onSongSelect(index)
   }
 
   handleMoreSongs = () => {
@@ -74,6 +72,7 @@ class SongSelector extends Component {
 
   renderWaypoint = () => {
     const { isLoading } = this.props
+    let throttledHandler = null
 
     if (!isLoading) {
       return (
@@ -81,7 +80,15 @@ class SongSelector extends Component {
           <td className='is-paddingless'>
             <Waypoint
               onEnter={this.handleMoreSongs.bind()}
-              throttleHandler={(scrollHandler) => throttle(scrollHandler, 100)}
+              throttleHandler={(scrollHandler) => {
+                throttledHandler = throttle(scrollHandler, 300)
+                return throttledHandler
+              }}
+              ref={(component) => {
+                if (throttledHandler && !component) {
+                  throttledHandler.cancel()
+                }
+              }}
             />
           </td>
         </tr>
@@ -125,15 +132,10 @@ class SongSelector extends Component {
   }
 }
 
-Waypoint.propTypes = {
-  onEnter: T.func.isRequired,
-  throttleHandler: T.func.isRequired
-}
-
 SongSelector.propTypes = {
   onPause: T.func.isRequired,
   onResume: T.func.isRequired,
-  onSkipTo: T.func.isRequired,
+  onSongSelect: T.func.isRequired,
   onFetch: T.func.isRequired,
   count: T.number.isRequired,
   currentIndex: T.number,
