@@ -44,16 +44,36 @@ const config = merge(baseConfig, {
       root: __dirname,
       verbose: true
     }),
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.optimize.UglifyJsPlugin({
-      compressor: {
+      beautify: false,
+      comments: false,
+      compress: {
+        sequences: true,
+        booleans: true,
+        loops: true,
+        unused: true,
+        warnings: false,
+        drop_console: true,
+        unsafe: true,
+        dead_code: true,
         screw_ie8: true,
-        warnings: false
+        conditionals: true,
+        if_return: true,
+        join_vars: true
       }
     }),
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 15 }),
+    new webpack.optimize.MinChunkSizePlugin({ minChunkSize: 10000 }),
+    new webpack.optimize.CommonsChunkPlugin({
+      children: true,
+      async: true
+    }),
+    new webpack.optimize.DedupePlugin(),
     new ExtractTextPlugin('[name].css', { allChunks: true }),
     new purify({
       basePath: __dirname,
