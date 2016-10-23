@@ -5,7 +5,10 @@
     "production": {
       "presets": ["react-optimize"],
       "plugins": [
-        "babel-plugin-dev-expression"
+        "babel-plugin-dev-expression",
+        "transform-react-inline-elements",
+        "transform-react-constant-elements",
+        "transform-react-remove-prop-types"
       ]
     },
     "development": {

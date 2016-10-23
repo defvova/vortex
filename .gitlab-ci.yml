@@ -32,6 +32,7 @@ build:
       - style.css.map
     expire_in: 1d
   script:
+    - npm install -g optimize-js
     - npm run build
 
 test:
