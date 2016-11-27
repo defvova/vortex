@@ -5,9 +5,9 @@ const initialState = fromJS({
   locationBeforeTransitions: null
 })
 
-export default (state = initialState, action) => {
-  if (action.type === LOCATION_CHANGE) {
-    return state.set('locationBeforeTransitions', action.payload)
+export default (state = initialState, { type, payload }) => {
+  if (type === LOCATION_CHANGE) {
+    return state.set('locationBeforeTransitions', payload)
   }
 
   return state

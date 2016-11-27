@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware } from 'redux'
-import { hashHistory } from 'react-router'
+import hashHistory from 'react-router/lib/hashHistory'
 import { routerMiddleware } from 'react-router-redux'
 import { Map } from 'immutable'
 import RavenMiddleware from 'redux-raven-middleware'

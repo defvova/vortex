@@ -83,6 +83,12 @@ To package apps with options:
 $ npm run package -- --[option]
 ```
 
+Check app size
+
+```bash
+$ du -xcsh *
+```
+
 #### Options
 
 - --name, -n: Application name (default: ElectronReact)
