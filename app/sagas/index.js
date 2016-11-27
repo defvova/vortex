@@ -1,8 +1,12 @@
 import { fork } from 'redux-saga/effects'
-import rootAudio from './audio'
+import rootFavourite from './favourite'
+import rootPlayer from './player'
+import rootNewsFeed from './newsFeed'
 
 export default function* rootSagas() {
   yield [
-    fork(rootAudio)
+    fork(rootFavourite),
+    fork(rootPlayer),
+    fork(rootNewsFeed)
   ]
 }

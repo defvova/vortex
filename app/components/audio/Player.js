@@ -1,18 +1,24 @@
 import React, { Component, PropTypes as T } from 'react'
 import classNames from 'classnames'
-import { formatTime } from '../../utils/formatTime'
+import { formatTime } from '../../utils/time'
 
-class PlayerControl extends Component {
+class Player extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      sliderDown: props.sliderDown
-    }
 
     this.handleVolume = this.handleVolume.bind()
     this.handleSeek = this.handleSeek.bind()
   }
+
+  // shouldComponentUpdate(nextProps) {
+  //   Object.keys(this.props).forEach((key) => {
+  //     if (this.props[key] !== nextProps[key]) {
+  //       return true
+  //     }
+  //   })
+  //
+  //   return false
+  // }
 
   control = (nameClass, clickHandler) => {
     const cl = `fa fa-${nameClass} ${nameClass}`
@@ -98,11 +104,11 @@ class PlayerControl extends Component {
           <div className='loaded' style={this.progressBar(bytesLoaded)} />
         </div>
         <div className='column is-one-quarter has-text-centered controls'>
-          { this.control('step-backward', onSongPrev.bind()) }
-          { controls.play && this.control('play', onPlay.bind()) }
-          { controls.pause && this.control('pause', onPause.bind()) }
-          { controls.resume && this.control('play', onResume.bind()) }
-          { this.control('step-forward', onSongNext.bind()) }
+          {this.control('step-backward', onSongPrev.bind())}
+          {controls.play && this.control('play', onPlay.bind(this, null))}
+          {controls.pause && this.control('pause', onPause.bind())}
+          {controls.resume && this.control('play', onResume.bind())}
+          {this.control('step-forward', onSongNext.bind())}
         </div>
         <div className='column is-6'>
           <div className='details'>
@@ -111,11 +117,11 @@ class PlayerControl extends Component {
         </div>
         <div className='column has-text-right'>
           <div className='actions'>
-            <div>{ this.control('headphones', onLoop.bind())}</div>
-            <div className={loopActive}>{ this.control('repeat', onLoop.bind()) }</div>
-            <div className={shuffleActive}>{ this.control('random', onShuffle.bind()) }</div>
+            <div>{this.control('headphones', onLoop.bind())}</div>
+            <div className={loopActive}>{ this.control('repeat', onLoop.bind())}</div>
+            <div className={shuffleActive}>{ this.control('random', onShuffle.bind())}</div>
             <div className='volume'>
-              { this.control(volumeClasses, onMute.bind()) }
+              {this.control(volumeClasses, onMute.bind())}
               <div className='popover'>
                 <input
                   className='range'
@@ -135,7 +141,7 @@ class PlayerControl extends Component {
   }
 }
 
-PlayerControl.propTypes = {
+Player.propTypes = {
   onPlay: T.func.isRequired,
   onPause: T.func.isRequired,
   onResume: T.func.isRequired,
@@ -154,8 +160,6 @@ PlayerControl.propTypes = {
   volume: T.number.isRequired,
   isMute: T.bool.isRequired,
   currentStatus: T.string.isRequired,
-  currentIndex: T.number.isRequired,
-  sliderDown: T.bool.isRequired,
   artist: T.string.isRequired,
   title: T.string.isRequired,
   elapsed: T.number.isRequired,
@@ -166,8 +170,4 @@ PlayerControl.propTypes = {
   isLoop: T.bool.isRequired
 }
 
-PlayerControl.defaultProps = {
-  sliderDown: false
-}
-
-export default PlayerControl
+export default Player

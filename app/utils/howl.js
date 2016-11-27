@@ -1,3 +1,5 @@
+import { Howl } from 'howler/dist/howler.min'
+
 export const getHowl = (id) => {
         const howles = window.Howler._howls.filter((howl) => {
           return howl._sounds[0]._id === id
@@ -50,4 +52,27 @@ export const getHowl = (id) => {
         }
 
         return { volume, prevVolume }
+      },
+
+      howl = (url, isLoop, onSongNext, onStep, onBytesLoaded) => {
+        const h = new Howl({
+          src: url,
+          html5: true,
+          loop: isLoop,
+          onplay: () => {
+            requestAnimationFrame(onStep)
+            requestAnimationFrame(onBytesLoaded)
+            h.loop(isLoop)
+          },
+          onseek: () => {
+            requestAnimationFrame(onBytesLoaded)
+          },
+          onend: () => {
+            if (!h.loop()) {
+              onSongNext()
+            }
+          }
+        })
+
+        return h
       }

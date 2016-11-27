@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import createLogger from 'redux-logger'
-import { hashHistory } from 'react-router'
+import hashHistory from 'react-router/lib/hashHistory'
 import { routerMiddleware, push } from 'react-router-redux'
 import perflogger from 'redux-perf-middleware'
 import freeze from 'redux-freeze'

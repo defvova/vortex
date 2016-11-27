@@ -14,6 +14,10 @@ class Header extends Component {
     this.handleVkLogin = this.handleVkLogin.bind()
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return ((this.props.count !== nextProps.count) || this.state.isMenuActive !== nextState.isMenuActive)
+  }
+
   componentWillMount() {
     document.addEventListener('click', (e) => {
       const klass = e.target.getAttribute('class'),

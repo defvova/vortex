@@ -1,10 +1,12 @@
 import { Component, PropTypes as T } from 'react'
 
 class App extends Component {
-  render() {
-    const { children } = this.props
+  _bind(...methods) {
+    methods.forEach((method) => this[method] = this[method].bind(this))
+  }
 
-    return children
+  render() {
+    return this.props.children
   }
 }
 

@@ -87,7 +87,7 @@ app.on('ready', async () => {
     }, {
       parent: mainWindow
     }).then((res) => {
-      configStore.set('vk', res)
+      configStore.set('vk', { token: res.access_token, ownerId: res.user_id })
     }).catch((err) => {
       console.error(err) // eslint-disable-line no-console
     })

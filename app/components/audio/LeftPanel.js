@@ -1,6 +1,18 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes as T } from 'react'
+import Link from 'react-router/lib/Link'
+import classNames from 'classnames'
 
 class LeftPanel extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.getCurrentStateName !== nextProps.getCurrentStateName
+  }
+
+  activeLink = (path) => {
+    return classNames({
+      'is-active': this.props.getCurrentStateName === path
+    })
+  }
+
   render() {
     return (
       <section className='hero is-dark'>
@@ -9,20 +21,20 @@ class LeftPanel extends Component {
             <aside className='menu'>
               <ul className='menu-list'>
                 <li>
-                  <a href='#' className='is-active'>
+                  <Link to='/' className={this.activeLink('favourite')}>
                     <span className='icon is-small'>
                       <i className='fa fa-tags' />
                     </span>
                     <span>Мої аудіозаписи</span>
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href='#'>
+                  <Link to='/newsFeed' className={this.activeLink('newsFeed')}>
                     <span className='icon is-small'>
                       <i className='fa fa-user-secret' />
                     </span>
                     <span>Оновлення друзів</span>
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href='#'>
@@ -55,6 +67,10 @@ class LeftPanel extends Component {
       </section>
     )
   }
+}
+
+LeftPanel.propTypes = {
+  getCurrentStateName: T.string.isRequired
 }
 
 export default LeftPanel
