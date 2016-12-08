@@ -1,6 +1,5 @@
 import isEqual from 'lodash.isequal'
 import isPlainObject from 'lodash.isplainobject'
-import isArray from 'lodash.isarray'
 import { fromJS } from 'immutable'
 
 const isObjectEqual = (obj1, obj2) => {
@@ -29,7 +28,7 @@ const isObjectEqual = (obj1, obj2) => {
       return true
     }
 
-    return isArray(value) && isArray(nextValue) && isEqual(value, nextValue)
+    return Array.isArray(value) && Array.isArray(nextValue) && isEqual(value, nextValue)
   })
 }
 
