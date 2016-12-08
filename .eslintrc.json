@@ -9,7 +9,7 @@
     "flowtype/define-flow-type": 1,
     "flowtype/use-flow-type": 1,
     "import/no-duplicates": 2,
-    "import/named": 2,
+    "import/named": 1,
     "comma-dangle": [2, "never"],
     "indent": [2, 2, { "SwitchCase": 1, "VariableDeclarator": { "var": 2, "let": 2, "const": 3 }}],
     "no-console": 2,

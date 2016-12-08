@@ -1,15 +1,8 @@
 import { Map } from 'immutable'
+import createReducer from '../utils/createReducer'
+import { UPDATE_PLAYER, UPDATE_LOOP, UPDATE_SHUFFLE, STATUS } from '../constants'
 
-export const UPDATE_LOOP = 'UPDATE_LOOP',
-      UPDATE_SHUFFLE = 'UPDATE_SHUFFLE',
-      UPDATE_PLAYER = 'UPDATE_PLAYER',
-      STATUS = {
-        stopped: 'stopped',
-        playing: 'playing',
-        paused: 'paused'
-      }
-
-const initState = Map({ // eslint-disable-line one-var
+const initState = Map({
   howlId: null,
   status: STATUS.stopped,
   currentAid: null,
@@ -21,15 +14,14 @@ const initState = Map({ // eslint-disable-line one-var
   isShuffle: false
 })
 
-export default function player(state = initState, action) {
-  switch (action.type) {
-    case UPDATE_PLAYER:
-      return state.merge({ ...action })
-    case UPDATE_LOOP:
-      return state.set('isLoop', !state.get('isLoop'))
-    case UPDATE_SHUFFLE:
-      return state.set('isShuffle', !state.get('isShuffle'))
-    default:
-      return state
+export default createReducer(initState, {
+  [UPDATE_PLAYER]: (state, action) => {
+    return state.merge({ ...action })
+  },
+  [UPDATE_LOOP]: (state) => {
+    return state.set('isLoop', !state.get('isLoop'))
+  },
+  [UPDATE_SHUFFLE]: (state) => {
+    return state.set('isShuffle', !state.get('isShuffle'))
   }
-}
+})

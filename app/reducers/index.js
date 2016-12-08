@@ -1,14 +1,14 @@
-import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux-immutable'
 import favourite from './favourite'
 import newsFeed from './newsFeed'
 import player from './player'
+import routing from './routing'
 
 const rootReducer = combineReducers({
+  routing,
   favourite,
   newsFeed,
-  player,
-  routing
+  player
 })
 
 export default rootReducer

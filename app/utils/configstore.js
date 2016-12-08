@@ -1,4 +1,4 @@
-import Configstore from 'configstore'
-import pkg from '../../package.json'
+const Configstore = require('configstore'),
+      pkg = require('../../package.json')
 
 module.exports = new Configstore(pkg.name)

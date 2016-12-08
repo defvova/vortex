@@ -12,19 +12,19 @@ import {
 import {
   UPDATE_PLAYER,
   UPDATE_LOOP,
-  UPDATE_SHUFFLE
-} from '../reducers/player'
+  UPDATE_SHUFFLE,
 
-export const WATCH_UPDATE_LOOP = 'WATCH_UPDATE_LOOP',
-      WATCH_UPDATE_SHUFFLE = 'WATCH_UPDATE_SHUFFLE',
-      WATCH_PLAY_SONG = 'WATCH_PLAY_SONG',
-      WATCH_PAUSE_SONG = 'WATCH_PAUSE_SONG',
-      WATCH_NEXT_SONG = 'WATCH_NEXT_SONG',
-      WATCH_PREV_SONG = 'WATCH_PREV_SONG',
-      WATCH_SELECT_SONG = 'WATCH_SELECT_SONG',
-      WATCH_RESUME_SONG = 'WATCH_RESUME_SONG'
+  WATCH_UPDATE_LOOP,
+  WATCH_UPDATE_SHUFFLE,
+  WATCH_PLAY_SONG,
+  WATCH_PAUSE_SONG,
+  WATCH_NEXT_SONG,
+  WATCH_PREV_SONG,
+  WATCH_SELECT_SONG,
+  WATCH_RESUME_SONG
+} from '../constants'
 
-const toParams = ({ // eslint-disable-line one-var
+const toParams = ({
   player,
   audio,
   currentStateName,
@@ -80,23 +80,25 @@ function* skipTo(action) {
   yield call(stopHowl, action.howlId)
   yield fork(stopAudio, action.prevState, action.currentStateName, action.currentAid)
 
-  const {
-    url,
-    title,
-    artist,
-    duration } = action.list.find((a) => {
-      return a.get('aid') === action.aid
-    }).toObject(),
+  const audio = action.list.find((a) => {
+          return a.get('aid') === action.aid
+        }),
         type = `${action.currentStateName.toUpperCase()}_SONG_NEXT`,
-        id = yield call(playHowl, url, action.isLoop, action.onSongNext, action.onStep, action.onBytesLoaded)
+        id = yield call(playHowl,
+          audio.get('url'),
+          action.isLoop,
+          action.onSongNext,
+          action.onStep,
+          action.onBytesLoaded
+        )
 
   yield put({ type, prevAid: action.currentAid, aid: action.aid, status: action.status, howlId: id })
   yield put({
     type: UPDATE_PLAYER,
     currentAid: action.aid,
-    title,
-    artist,
-    duration,
+    title: audio.get('title'),
+    artist: audio.get('artist'),
+    duration: audio.get('duration'),
     howlId: id,
     status: action.status,
     prevState: action.currentStateName
@@ -114,21 +116,32 @@ function* updateShuffle() {
 
 function* playSong(action) {
   const params = toParams(action),
-        { url, aid, duration, title, artist } = (params.list.find((a) => {
+        audio = params.list.find((a) => {
           return a.get('aid') === params.currAid
-        }) || params.list.first()).toObject(),
-        id = yield call(playHowl, url, params.isLoop, params.onSongNext, params.onStep, params.onBytesLoaded)
+        }) || params.list.first(),
+        id = yield call(playHowl,
+          audio.get('url'),
+          params.isLoop,
+          params.onSongNext,
+          params.onStep,
+          params.onBytesLoaded
+        )
 
-  yield fork(updateStatus, { aid, status: params.status, howlId: id, currentStateName: params.currentStateName })
+  yield fork(updateStatus, {
+    aid: audio.get('aid'),
+    status: params.status,
+    howlId: id,
+    currentStateName: params.currentStateName
+  })
   yield put({
     type: UPDATE_PLAYER,
-    currentAid: aid,
+    currentAid: audio.get('aid'),
     howlId: id,
     status: params.status,
     isLoop: params.isLoop,
-    duration,
-    title,
-    artist,
+    duration: audio.get('duration'),
+    title: audio.get('title'),
+    artist: audio.get('artist'),
     prevState: params.currentStateName
   })
 }
@@ -148,17 +161,19 @@ function* resumeSong(action) {
 function* nextSong(action) {
   const params = toParams(action),
         index = yield call(getNextIndex, params.isShuffle, params.size, params.count, params.currentIndex),
-        aid = params.list.getIn([index, 'aid'])
+        aid = params.list.getIn([index, 'aid']),
+        currentStateName = params.prevState || params.currentStateName
 
-  yield fork(skipTo, { ...params, aid, currentStateName: params.prevState })
+  yield fork(skipTo, { ...params, aid, currentStateName })
 }
 
 function* prevSong(action) {
   const params = toParams(action),
         index = yield call(getPrevIndex, params.isShuffle, params.size, params.currentIndex),
-        aid = params.list.getIn([index, 'aid'])
+        aid = params.list.getIn([index, 'aid']),
+        currentStateName = params.prevState || params.currentStateName
 
-  yield fork(skipTo, { ...params, aid, currentStateName: params.prevState })
+  yield fork(skipTo, { ...params, aid, currentStateName })
 }
 
 function* selectSong(action) {

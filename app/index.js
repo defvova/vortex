@@ -8,18 +8,18 @@ import routes from './routes'
 import configureStore from './store/configureStore'
 import './app.global.scss'
 import '../node_modules/bulma/css/bulma.css'
-import { whyDidYouUpdate } from 'why-did-you-update'
 
 const store = configureStore(),
       history = syncHistoryWithStore(hashHistory, store, {
         selectLocationState(state) {
-          return state.get('routing')
+          return state.get('routing').toObject()
         }
       })
 
-if (process.env.NODE_ENV !== 'production') {
-  whyDidYouUpdate(React, { include: /^pure/ })
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   const whyDidYouUpdate = require('why-did-you-update/').whyDidYouUpdate
+//   whyDidYouUpdate(React)
+// }
 
 render(
   <Provider store={store}>
