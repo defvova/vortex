@@ -1,6 +1,6 @@
 import configStore from '../utils/configstore'
 import vk from '../api/provider/vk'
-import { STATUS } from '../reducers/player'
+import { STATUS } from '../constants'
 
 const { token, ownerId } = configStore.get('vk') || {}
 

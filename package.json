@@ -24,7 +24,8 @@
     "package": "cross-env NODE_ENV=production node -r babel-register -r babel-polyfill package.js",
     "package-all": "npm run package -- --all",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
-    "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\""
+    "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
+    "check-update": "ncu"
   },
   "lint-staged": {
     "*.js": "eslint",
@@ -65,7 +66,7 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-react-hmre": "^1.1.1",
     "babel-preset-react-optimize": "^1.0.1",
-    "babel-preset-stage-0": "^6.5.0",
+    "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.14.0",
     "bulma": "^0.2.1",
     "chai": "^3.5.0",
@@ -83,7 +84,7 @@
     "electron-debug": "^1.0.1",
     "electron-devtools-installer": "^2.0.1",
     "electron-packager": "^8.0.0",
-    "electron-window-state": "^3.1.0",
+    "electron-window-state": "^4.0.0",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-babel": "^4.0.0",
@@ -99,6 +100,10 @@
     "jsdom": "^9.5.0",
     "json-loader": "^0.5.4",
     "lint-staged": "^3.0.3",
+    "lodash.isarray": "^4.0.0",
+    "lodash.isequal": "^4.4.0",
+    "lodash.isfunction": "^3.0.8",
+    "lodash.isplainobject": "^4.0.6",
     "lodash.throttle": "^4.1.1",
     "loose-envify": "^1.2.0",
     "minimist": "^1.2.0",
@@ -136,7 +141,7 @@
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.7.0",
     "webpack-hot-middleware": "^2.12.2",
-    "webpack-merge": "^0.17.0",
+    "webpack-merge": "^1.0.2",
     "why-did-you-update": "0.0.8"
   },
   "dependencies": {
@@ -144,6 +149,6 @@
   },
   "devEngines": {
     "node": "4.x || 5.x || 6.x || 7.x",
-    "npm": "2.x || 3.x"
+    "npm": "2.x || 3.x || 4.x"
   }
 }

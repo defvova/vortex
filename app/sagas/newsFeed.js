@@ -4,10 +4,9 @@ import { getSourceIds, getNewsFeed } from '../services/newsFeed'
 import {
   NEWSFEED_REQUEST,
   NEWSFEED_RECEIVE,
-  NEWSFEED_RECEIVE_FAILED
-} from '../reducers/newsFeed'
-
-export const WATCH_NEWSFEED = 'WATCH_NEWSFEED'
+  NEWSFEED_RECEIVE_FAILED,
+  WATCH_NEWSFEED
+} from '../constants'
 
 function* fetch() {
   try {

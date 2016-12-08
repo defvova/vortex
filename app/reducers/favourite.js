@@ -1,14 +1,16 @@
 import { Map, List, fromJS } from 'immutable'
-import { STATUS } from './player'
+import createReducer from '../utils/createReducer'
+import {
+  FAVOURITE_REQUEST,
+  FAVOURITE_RECEIVE,
+  FAVOURITE_RECEIVE_FAILED,
+  FAVOURITE_UPDATE_STATUS,
+  FAVOURITE_SONG_NEXT,
+  FAVOURITE_SONG_STOP,
+  STATUS
+} from '../constants'
 
-export const FAVOURITE_REQUEST = 'FAVOURITE_REQUEST',
-      FAVOURITE_RECEIVE = 'FAVOURITE_RECEIVE',
-      FAVOURITE_RECEIVE_FAILED = 'FAVOURITE_RECEIVE_FAILED',
-      FAVOURITE_UPDATE_STATUS = 'FAVOURITE_UPDATE_STATUS',
-      FAVOURITE_SONG_NEXT = 'FAVOURITE_SONG_NEXT',
-      FAVOURITE_SONG_STOP = 'FAVOURITE_SONG_STOP'
-
-const initState = Map({ // eslint-disable-line one-var
+const initState = Map({
         list: List(),
         count: 0,
         offset: 0,
@@ -22,13 +24,13 @@ const initState = Map({ // eslint-disable-line one-var
           return a.get('aid') === aid
         })
       },
-      updateStatus = (state, aid, howlId, status) => {
+      updateStatus = ({ state, aid, howlId, status }) => {
         const index = getIndex(state, aid),
               audio = state.getIn(['list', index])
 
         return state.setIn(['list', index], audio.merge({ howlId, status }))
       },
-      receiveFavourites = (state, count, list, offset, step) => {
+      receiveFavourites = ({ state, count, list, offset, step }) => {
         return state.merge({
           count,
           list: state.get('list').concat(fromJS(list)),
@@ -39,41 +41,32 @@ const initState = Map({ // eslint-disable-line one-var
         })
       }
 
-export default function favourite(state = initState, {
-  type,
-  count,
-  list,
-  offset,
-  step,
-  howlId,
-  status,
-  prevAid,
-  aid,
-  error
-}) {
-  switch (type) {
-    case FAVOURITE_REQUEST:
-      return state.set('isLoading', true)
-    case FAVOURITE_RECEIVE:
-      return receiveFavourites(state, count, list, offset, step)
-    case FAVOURITE_UPDATE_STATUS:
-      return updateStatus(state, aid, howlId, status)
-    case FAVOURITE_SONG_NEXT:
-      if (prevAid === aid || getIndex(state, prevAid) < 0) {
-        return updateStatus(state, aid, howlId, status)
-      }
+export default createReducer(initState, {
+  [FAVOURITE_REQUEST]: (state) => {
+    return state.set('isLoading', true)
+  },
+  [FAVOURITE_RECEIVE]: (state, action) => {
+    return receiveFavourites({ state, ...action })
+  },
+  [FAVOURITE_UPDATE_STATUS]: (state, action) => {
+    return updateStatus({ state, ...action })
+  },
+  [FAVOURITE_SONG_NEXT]: (state, action) => {
+    if (action.prevAid === action.aid || getIndex(state, action.prevAid) < 0) {
+      return updateStatus({ state, ...action })
+    }
 
-      return updateStatus(state, aid, howlId, status).
-        setIn(['list', getIndex(state, prevAid), 'status'], STATUS.stopped)
-    case FAVOURITE_SONG_STOP:
-      if (getIndex(state, aid) < 0) {
-        return state
-      }
-
-      return state.setIn(['list', getIndex(state, aid), 'status'], STATUS.stopped)
-    case FAVOURITE_RECEIVE_FAILED:
-      return state.set('error', error)
-    default:
+    return updateStatus({ state, ...action }).
+      setIn(['list', getIndex(state, action.prevAid), 'status'], STATUS.stopped)
+  },
+  [FAVOURITE_SONG_STOP]: (state, { aid }) => {
+    if (getIndex(state, aid) < 0) {
       return state
+    }
+
+    return state.setIn(['list', getIndex(state, aid), 'status'], STATUS.stopped)
+  },
+  [FAVOURITE_RECEIVE_FAILED]: (state, action) => {
+    return state.set('error', action.error)
   }
-}
+})

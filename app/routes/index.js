@@ -1,10 +1,10 @@
 import React from 'react'
 import Route from 'react-router/lib/Route'
 import IndexRoute from 'react-router/lib/IndexRoute'
-import App from './containers/App'
-import Audio from './containers/Audio'
-import NewsFeed from './containers/NewsFeed'
-import Favourite from './containers/Favourite'
+import App from '../containers/App.jsx'
+import Audio from '../containers/Audio.jsx'
+import NewsFeed from '../containers/NewsFeed.jsx'
+import Favourite from '../containers/Favourite.jsx'
 
 export default (
   <Route path='/' component={App}>

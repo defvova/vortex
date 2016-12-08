@@ -4,10 +4,9 @@ import { getFavourite } from '../services/favourite'
 import {
   FAVOURITE_REQUEST,
   FAVOURITE_RECEIVE,
-  FAVOURITE_RECEIVE_FAILED
-} from '../reducers/favourite'
-
-export const WATCH_FAVOURITE = 'WATCH_FAVOURITE'
+  FAVOURITE_RECEIVE_FAILED,
+  WATCH_FAVOURITE
+} from '../constants'
 
 function* fetch(action) {
   try {
