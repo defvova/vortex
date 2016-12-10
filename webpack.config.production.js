@@ -1,49 +1,25 @@
 import webpack from 'webpack'
+import validate from 'webpack-validator'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import purify from 'purifycss-webpack-plugin'
 import merge from 'webpack-merge'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import baseConfig from './webpack.config.base'
-import CleanWebpackPlugin from 'clean-webpack-plugin'
+import { productName } from './package.json'
 
-const config = merge(baseConfig, {
+export default validate(merge(baseConfig, {
   devtool: 'cheap-module-source-map',
-
   entry: [
     'babel-polyfill',
-    './app/index'
+    './src/index'
   ],
-
-  output: {
-    publicPath: '../dist/'
-  },
-
   module: {
-    loaders: [
-      {
-        test: /\.global\.scss$/,
-        loader: ExtractTextPlugin.extract(
-          'style-loader',
-          'css-loader!postcss-loader',
-          'sass'
-        )
-      },
-
-      {
-        test: /^((?!\.global).)*\.scss$/,
-        loader: ExtractTextPlugin.extract(
-          'style-loader',
-          'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss-loader',
-          'sass'
-        )
-      }
-    ]
+    loaders: [{
+      test: /\.scss|\.css$/,
+      loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader!postcss-loader')
+    }]
   },
-
   plugins: [
-    new CleanWebpackPlugin(['dist', 'release'], {
-      root: __dirname,
-      verbose: true
-    }),
     new webpack.NoErrorsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.DefinePlugin({
@@ -74,17 +50,19 @@ const config = merge(baseConfig, {
       async: true
     }),
     new webpack.optimize.DedupePlugin(),
-    new ExtractTextPlugin('[name].css', { allChunks: true }),
+    new ExtractTextPlugin('bundle.css', { allChunks: true }),
     new purify({
       basePath: __dirname,
       purifyOptions: {
         info: true,
         minify: true
       }
+    }),
+    new HtmlWebpackPlugin({
+      title: productName,
+      filename: 'app.html',
+      template: 'src/app.template.ejs'
     })
   ],
-
   target: 'electron-renderer'
-})
-
-export default config
+}))

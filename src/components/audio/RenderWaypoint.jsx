@@ -1,6 +1,6 @@
 import React, { Component, PropTypes as T, createElement as el } from 'react'
 import Waypoint from 'react-waypoint'
-import throttle from 'lodash.throttle'
+import _throttle from 'lodash/throttle'
 import renderIf from '../../utils/renderif'
 import isObjectEqual from '../../utils/isObjectEqual'
 
@@ -28,7 +28,7 @@ class RenderWaypoint extends Component {
           el(Waypoint, {
             onEnter: this.handleMore.bind(),
             throttleHandler: (scrollHandler) => {
-              throttledHandler = throttle(scrollHandler, 300)
+              throttledHandler = _throttle(scrollHandler, 300)
               return throttledHandler
             },
             ref: (component) => {

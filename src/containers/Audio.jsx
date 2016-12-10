@@ -50,12 +50,6 @@ class Audio extends React.Component {
     return false
   }
 
-  componentWillMount() {
-    if (process.env.NODE_ENV === 'production') {
-      window.settings.visitor.pageview('/Audio').send()
-    }
-  }
-
   get getCurrentStateName() {
     const path = this.props.location.pathname
 

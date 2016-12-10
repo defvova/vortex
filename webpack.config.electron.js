@@ -1,27 +1,31 @@
 import webpack from 'webpack'
 import merge from 'webpack-merge'
+import validate from 'webpack-validator'
+import CleanWebpackPlugin from 'clean-webpack-plugin'
 import baseConfig from './webpack.config.base'
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
   devtool: 'source-map',
 
-  entry: ['babel-polyfill', './main.development'],
+  entry: [
+    'babel-polyfill',
+    './src/main'
+  ],
 
   output: {
-    path: __dirname,
-    filename: './main.js'
+    filename: 'main.js'
   },
 
   plugins: [
+    new CleanWebpackPlugin(['dist', 'release'], {
+      root: __dirname,
+      verbose: true
+    }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false
       }
     }),
-    new webpack.BannerPlugin(
-      'require("source-map-support").install();',
-      { raw: true, entryOnly: false }
-    ),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
@@ -34,10 +38,5 @@ export default merge(baseConfig, {
   node: {
     __dirname: false,
     __filename: false
-  },
-
-  externals: [
-    'font-awesome',
-    'source-map-support'
-  ]
-})
+  }
+}))

@@ -1,20 +1,26 @@
 import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import windowStateKeeper from 'electron-window-state'
-import auth from './app/api/provider/auth'
-import configStore from './app/utils/configstore'
-import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './app/api/config'
+import auth from './api/provider/auth'
+import configStore from './utils/configstore'
+import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './api/config'
 
-let mainWindow = null
+let mainWindow = null,
+    menu = null,
+    template = null
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support')
+
+  sourceMapSupport.install()
+}
 
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')()
-}
+  const path = require('path'),
+        p = path.join(__dirname, '..', 'src', 'node_modules')
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+  require('module').globalPaths.push(p)
+}
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -32,6 +38,12 @@ const installExtensions = async () => {
     }
   }
 }
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
 app.on('ready', async () => {
   await installExtensions()
@@ -51,7 +63,7 @@ app.on('ready', async () => {
     minWidth: 780
   })
 
-  mainWindow.loadURL(`file://${__dirname}/app/app.html`)
+  mainWindow.loadURL(`file://${__dirname}/app.html`)
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show()
@@ -77,6 +89,34 @@ app.on('ready', async () => {
         }
       }]).popup(mainWindow)
     })
+  }
+
+  if (process.platform === 'darwin') {
+    template = [{
+      label: 'View',
+      submenu: [{
+        label: 'Reload',
+        accelerator: 'Command+R',
+        click() {
+          mainWindow.webContents.reload()
+        }
+      }, {
+        label: 'Toggle Full Screen',
+        accelerator: 'Ctrl+Command+F',
+        click() {
+          mainWindow.setFullScreen(!mainWindow.isFullScreen())
+        }
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Alt+Command+I',
+        click() {
+          mainWindow.toggleDevTools()
+        }
+      }]
+    }]
+
+    menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
   }
 
   ipcMain.on('get-vk-permission', () => {
