@@ -104,7 +104,10 @@
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolve": {
-      "moduleDirectory": ["node_modules", "public"]
+      "moduleDirectory": ["node_modules", "public"],
+      "webpack": {
+        "config": "webpack.config.eslint.js"
+      }
     }
   }
 }

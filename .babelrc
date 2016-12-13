@@ -1,6 +1,6 @@
 {
-  "presets": ["es2015", "react", "stage-2"],
-  "plugins": ["add-module-exports"],
+  "presets": ["es2015", "stage-0", "react", "stage-2"],
+  "plugins": ["add-module-exports", "lodash"],
   "env": {
     "production": {
       "presets": ["react-optimize"],

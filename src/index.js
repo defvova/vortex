@@ -6,8 +6,8 @@ import hashHistory from 'react-router/lib/hashHistory'
 import { syncHistoryWithStore } from 'react-router-redux'
 import routes from './routes'
 import configureStore from './store/configureStore'
-import './app.global.scss'
-import '../node_modules/bulma/css/bulma.css'
+
+import './styles/index.scss'
 
 const store = configureStore(),
       history = syncHistoryWithStore(hashHistory, store, {

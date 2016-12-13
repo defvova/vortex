@@ -11,38 +11,30 @@ import rootSagas from '../sagas'
 
 const actionCreators = { push },
       sagaMiddleware = createSagaMiddleware(),
-      initialState = Map(),
       logger = createLogger({
         level: 'info',
         collapsed: true
       }),
       router = routerMiddleware(hashHistory),
-      enhancer = compose(
-        applyMiddleware(
-          sagaMiddleware,
-          require('redux-immutable-state-invariant')(),
-          freeze,
-          perflogger,
-          router,
-          logger
-        ),
-        window.devToolsExtension ?
-          window.devToolsExtension({ actionCreators }) :
-          (noop) => noop
-      )
+      composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ actionCreators }) : compose,
+      enhancer = composeEnhancers(applyMiddleware(
+        sagaMiddleware,
+        require('redux-immutable-state-invariant')(),
+        freeze,
+        perflogger,
+        router,
+        logger
+      ))
 
-export default function configureStore() {
+export default function configureStore(initialState: Map) {
   const store = createStore(rootReducer, initialState, enhancer)
 
   sagaMiddleware.run(rootSagas)
 
-  if (window.devToolsExtension) {
-    window.devToolsExtension.updateStore(store)
-  }
-
   if (module.hot) {
     module.hot.accept('../reducers', () =>
-      store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
+      store.replaceReducer(require('../reducers'))
     )
   }
 

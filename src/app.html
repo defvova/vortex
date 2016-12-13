@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Vortex</title>
+  </head>
+  <body>
+    <div id='root' />
+    <script>
+      {
+        const script = document.createElement('script');
+        const port = process.env.PORT || 3000;
+
+        script.src = `http://localhost:`+ port +`/dist/bundle.js`;
+        script.defer = true; // parser-inserted true defer take precedence over async behavior
+        document.head.appendChild(script);
+      }
+    </script>
+  </body>
+</html>

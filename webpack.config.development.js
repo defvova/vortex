@@ -1,45 +1,35 @@
-/* eslint max-len: 0 */
 import webpack from 'webpack'
+import validate from 'webpack-validator'
 import merge from 'webpack-merge'
+import formatter from 'eslint-formatter-pretty'
 import baseConfig from './webpack.config.base'
 
 const port = process.env.PORT || 3000
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
   debug: true,
 
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'inline-source-map',
 
   entry: [
     `webpack-hot-middleware/client?path=http://localhost:${port}/__webpack_hmr`,
     'babel-polyfill',
-    './app/index'
+    './src/index'
   ],
+
+  module: {
+    loaders: [{
+      test: /\.scss|\.css$/,
+      loader: 'style!css!sass!postcss'
+    }]
+  },
 
   output: {
     publicPath: `http://localhost:${port}/dist/`
   },
 
-  module: {
-    loaders: [
-      {
-        test: /\.global\.scss$/,
-        loaders: [
-          'style-loader',
-          'css-loader?sourceMap',
-          'sass?sourceMap!postcss-loader'
-        ]
-      },
-
-      {
-        test: /^((?!\.global).)*\.scss$/,
-        loaders: [
-          'style-loader',
-          'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
-          'sass?sourceMap!postcss-loader'
-        ]
-      }
-    ]
+  eslint: {
+    formatter
   },
 
   plugins: [
@@ -51,4 +41,4 @@ export default merge(baseConfig, {
   ],
 
   target: 'electron-renderer'
-})
+}))
