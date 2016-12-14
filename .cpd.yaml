@@ -1,0 +1,11 @@
+languages:
+  - javascript
+  - yaml
+  - css
+files:
+  - 'src/**/**/*'
+  - 'src/**/*'
+  - 'src/*'
+exclude:
+  - 'node_modules'
+reporter: json
