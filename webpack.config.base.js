@@ -9,6 +9,8 @@ import postcssFontpath from 'postcss-fontpath'
 import nodeExternals from 'webpack-node-externals'
 import combineLoaders from 'webpack-combine-loaders'
 import atImport from 'postcss-import'
+import ProgressBarPlugin from 'progress-bar-webpack-plugin'
+import chalk from 'chalk'
 import { dependencies as externals } from './package.json'
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -49,6 +51,10 @@ export default validate({
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
   },
   plugins: [
+    new ProgressBarPlugin({
+      format: `${chalk.blue.bold('build')} [:bar] ${chalk.green.bold(':percent')} (:elapsed seconds) `,
+      clear: false
+    }),
     new webpack.DefinePlugin({ 'global.GENTLY': false }),
     new webpack.BannerPlugin(
       'require("source-map-support").install();',

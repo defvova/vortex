@@ -4,9 +4,7 @@ import auth from './api/provider/auth'
 import configStore from './utils/configstore'
 import { VK_APP_ID, VK_SCOPE, VK_REVOKE } from './api/config'
 
-let mainWindow = null,
-    menu = null,
-    template = null
+let mainWindow = null
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support')
@@ -89,34 +87,6 @@ app.on('ready', async () => {
         }
       }]).popup(mainWindow)
     })
-  }
-
-  if (process.platform === 'darwin') {
-    template = [{
-      label: 'View',
-      submenu: [{
-        label: 'Reload',
-        accelerator: 'Command+R',
-        click() {
-          mainWindow.webContents.reload()
-        }
-      }, {
-        label: 'Toggle Full Screen',
-        accelerator: 'Ctrl+Command+F',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen())
-        }
-      }, {
-        label: 'Toggle Developer Tools',
-        accelerator: 'Alt+Command+I',
-        click() {
-          mainWindow.toggleDevTools()
-        }
-      }]
-    }]
-
-    menu = Menu.buildFromTemplate(template)
-    Menu.setApplicationMenu(menu)
   }
 
   ipcMain.on('get-vk-permission', () => {
