@@ -19,6 +19,7 @@
 import url from 'url'
 import qs from 'querystring'
 import { BrowserWindow } from 'electron'
+import Promise from 'bluebird'
 import { VK_AUTHORIZE_URL, VK_REDIRECT_URL } from '../config'
 
 function auth(options, windowOptions) {
