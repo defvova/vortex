@@ -1,4 +1,4 @@
-import { Howl } from 'howler/dist/howler.min'
+import { Howl } from 'howler'
 
 export const getHowl = (id) => {
         const howles = window.Howler._howls.filter((howl) => {

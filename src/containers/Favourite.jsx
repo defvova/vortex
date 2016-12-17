@@ -11,10 +11,6 @@ class Favourite extends React.Component {
       return true
     }
 
-    if (!isObjectEqual(this.props.favourite, nextProps.favourite)) {
-      return true
-    }
-
     return false
   }
 
