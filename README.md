@@ -1,7 +1,6 @@
-# Vortex
+![](./screen.png)
 
-[![build status](https://gitlab.com/cool-dudes/vortex/badges/master/build.svg)](https://gitlab.com/cool-dudes/vortex/commits/master)
-[![coverage report](https://gitlab.com/cool-dudes/vortex/badges/master/coverage.svg)](https://gitlab.com/cool-dudes/vortex/commits/master)
+# Vortex
 
 ![](./erb-logo.png)
 
@@ -15,7 +14,7 @@
 First, clone the repo via git:
 
 ```bash
-$ npm cache clean && git clone git@gitlab.com:cool-dudes/vortex.git
+$ npm cache clean && git clone git@github.com:0bman/vortex.git
 ```
 
 And then install dependencies.
@@ -104,6 +103,3 @@ Use `electron-packager` to pack your app with `--all` options for darwin (osx), 
 ## Dispatching redux actions from main process
 
 see discusses in [#118](https://github.com/chentsulin/electron-react-boilerplate/issues/118) and [#108](https://github.com/chentsulin/electron-react-boilerplate/issues/108)
-
-## License
-GNU GPLv2 © [Volodimir Partytskyi](https://github.com/0bman)
