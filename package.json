@@ -182,7 +182,7 @@
     "howler": "^2.0.2",
     "immutable": "^3.8.1",
     "jscpd": "^0.6.6",
-    "lodash": "^4.17.2",
+    "lodash": "^4.17.13",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-immutable-proptypes": "^2.1.0",
